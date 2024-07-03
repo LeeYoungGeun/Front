@@ -17,10 +17,10 @@ function App() {
 
  return(
     <>
-     <GlobalStyle/> 
+      <GlobalStyle/> 
       
       <Routes>
-        <Route path='/' element={HomeTest} />
+        <Route path='/' Component={HomeTest} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
       </Routes>

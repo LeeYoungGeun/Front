@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "./apiTest";
 import "./Login.css";
+import { Link } from "react-router-dom";
 
 
 function Login(){
@@ -46,6 +47,7 @@ function Login(){
           placeholder="비밀번호"
         />
         <button type="submit">로그인</button>
+        <Link to="/SignUp"><p>회원가입</p></Link>
       </form>
       </div>
     </div>
