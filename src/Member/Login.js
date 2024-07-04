@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "./apiTest";
+import api from "./api";
 import "./Login.css";
 import { Link } from "react-router-dom";
 
@@ -22,7 +22,7 @@ function Login(){
         try {
           const response = await api.post('/api/auth/login', loginData);
           console.log(response.data);
-          // 로그인 성공 처리 (예: 토큰 저장, 리다이렉트 등)
+          //로그인성공
         } catch (error) {
           console.error('로그인 실패:', error);
         }

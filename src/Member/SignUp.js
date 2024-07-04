@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import api from "./apiTest";
+import api from "./api";
 import "./SignUp.css";
 
 
