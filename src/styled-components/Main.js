@@ -1,8 +1,14 @@
-import React from "react";
 import styled from "styled-components";
+import { FaSearch } from 'react-icons/fa';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay , FreeMode } from 'swiper/modules';
+import "swiper/css";
+import "swiper/css/free-mode";
 import MovieListImage1 from '../img/movieImg.jpg';
 import mainBodyRollingBanne1 from '../img/mainBodyRollingBanne1.jpg';
+import mainBodyRollingBanne2 from '../img/mainBodyRollingBanne2.jpg';
 
+// container
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -10,8 +16,8 @@ const MainContainer = styled.div`
   width: 100%;
   background-color: ${props => props.color || 'black'};
   color: white;
-
-  outline: 1px solid red;
+  overflow: hidden;
+  padding-top: 2vh;
 `;
 
 // header
@@ -22,10 +28,8 @@ const MainHeader = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  
   background-color: black;
-
-  outline: 1px solid red;
+  z-index: 1001; 
 `;
 
 const MainHeaderLogoArea = styled.div`
@@ -33,8 +37,10 @@ const MainHeaderLogoArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  outline: 1px solid red;
+  color: hotpink;
+  font-size: 32px;
+  font-weight: bold;
+  cursor: pointer;
 `;
 
 const MainHeaderSearchArea = styled.div`
@@ -42,61 +48,132 @@ const MainHeaderSearchArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  outline: 1px solid red;
 `;
+
+
+const SearchInput = styled.input`
+  width: 100%;
+  padding: 10px;
+  padding-right: 40px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  outline: none;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+`;
+
+const SearchIcon = styled(FaSearch)`
+  position: relative;
+  left: -35px;
+  color: white;
+  cursor: pointer;
+`;
+
+const SearchBar = () => {
+  return (
+      <>
+        <SearchInput type="text" placeholder="검색어를 입력해 주세요." />
+        <SearchIcon />
+      </>
+  );
+};
 
 const MainHeaderButtonArea = styled.div`
   width: 20%;
   display: flex;
-  justify-content: center;
+  margin-left: 50px;
   align-items: center;
+`;
 
-  outline: 1px solid red;
+const Button = styled.button`
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  
+  &:hover {
+    background-color: transparent;
+    color: hotpink;
+    border-color: white;
+  }
+
+  &:focus {
+    outline: none;
+  }
 `;
 
 // body
 const MainBody = styled.div`
   flex: 1;
-  margin-top: 8vh;
+  padding-top: 8vh; // margin-top 대신 padding-top 사용
   overflow-y: auto;
-  
   font-family: bold;
-
-  outline: 1px solid red;
 `;
 
 const MainBodyRollingBannerAreaStlye = styled.div`
-  height: 800px;
+  height: 70vh; // 뷰포트 높이의 100%
   width: 100%;
-
   display: flex;
   justify-content: center;
   align-items: center;
-
-  outline: 1px solid red;
 `;
 
 const RollingImgArea = styled.div`
-  
-  /* display: flex;
-  align-items: center;
-  justify-content: center; */
-  outline: 1px solid red;
-
+  width: 100%;
+  height: 100%;
 `;
 
-const RollingImg = styled.img`
+const StyledSwiper = styled(Swiper)`
+  width: 100%;
+  height: 100%;
+`;
 
-  height: 800px;
+const StyledSwiperSlide = styled(SwiperSlide)`
+  text-align: center;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
+const SlideImage = styled.img`
+ display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 `;
 
 function MainBodyRollingBannerArea(){
     return(
         <MainBodyRollingBannerAreaStlye>
             <RollingImgArea>
-                <RollingImg src={mainBodyRollingBanne1}></RollingImg>
+                <StyledSwiper
+                    spaceBetween={30}
+                    slidesPerView={1}
+                    loop={false}
+                    autoplay={{
+                        delay: 2500,
+                        disableOnInteraction: false,
+                    }}
+                    modules={[Autoplay]}
+                >    
+                  <StyledSwiperSlide>
+                    <SlideImage src={mainBodyRollingBanne1} alt="Banner 1"/>
+                  </StyledSwiperSlide>
+                  <StyledSwiperSlide>
+                    <SlideImage src={mainBodyRollingBanne2} alt="Banner 2"/>
+                  </StyledSwiperSlide>
+                </StyledSwiper>
             </RollingImgArea>
         </MainBodyRollingBannerAreaStlye>
     );
@@ -104,79 +181,87 @@ function MainBodyRollingBannerArea(){
 
 const MainBodyMovieListArea = styled.div`
   width: 100%;
-
-  outline: 1px solid red;
 `;
 
 const MainBodyMovieListSectionStyle = styled.div`
-
   width: 100%;
-
-  outline: 1px solid red;
-
-  /* flex-direction: column; */
+  margin-top: 40px;
 `;
 
 const SectionTitle = styled.h1`
   margin-left: 3em;
+  margin-bottom: 15px;
   height: 60px;
-
   display: flex;
   align-items: center;
-
-  outline: 1px solid red;
-
 `;
 
-const SectionImgArea = styled.div`
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: 1px solid red;
 
+const MovieListSwiper = styled(Swiper)`
+  width: 90%;
+  cursor: pointer;
+  .swiper-slide {
+    width: auto;
+    height: auto;
+  }
+  .swiper-scrollbar {
+    display: none;
+  }
+`;
+
+const MovieListSwiperSlide = styled(SwiperSlide)`
+  width: auto !important;
 `;
 
 const SectionImg = styled.img`
   margin-left: 1.5em;
   height: 220px;
-
+  width: auto;
 `;
 
 function MainBodyMovieListSection(){
-    return(
-        <MainBodyMovieListSectionStyle>
-            <SectionTitle>오늘의 Top 10</SectionTitle>
-            <SectionImgArea>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-                <SectionImg src={MovieListImage1}></SectionImg>
-            </SectionImgArea>
-        </MainBodyMovieListSectionStyle>
-    );
+  return(
+      <MainBodyMovieListSectionStyle>
+          <SectionTitle>오늘의 Top 10</SectionTitle>
+          <MovieListSwiper
+              slidesPerView="auto"
+              spaceBetween={20}
+              freeMode={true}
+              modules={[FreeMode]}
+          >
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 1"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 2"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 3"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 4"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 5"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 6"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 7"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 8"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 9"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 10"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 11"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 12"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 13"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 14"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 15"/></MovieListSwiperSlide>
+          </MovieListSwiper>
+      </MainBodyMovieListSectionStyle>
+  );
 }
-
 
 //footer
 const MainFooter = styled.div`
   height: 18vh;
   width: 100%;
-
   margin-left: 2em;
-
   display: flex;
   align-items: center;
-  
+  font-size: 1.2em;
 `;
 
 export {
   MainContainer, MainHeader, MainBody, MainFooter,
-  MainHeaderLogoArea, MainHeaderSearchArea, MainHeaderButtonArea,
+  MainHeaderLogoArea, MainHeaderSearchArea, SearchBar, MainHeaderButtonArea,  Button,
   MainBodyRollingBannerArea, MainBodyMovieListArea,
   MainBodyMovieListSection
 };

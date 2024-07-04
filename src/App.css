@@ -9,6 +9,12 @@ h1, h2, h3, h4, h5, h6 {
   font-size: inherit;
   font-weight: inherit;
 }
+  
+h1{
+  font-size: 2em;
+  font-weight: bold;
+}
+
 
 ul, ol {
   list-style: none;
@@ -37,6 +43,7 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
+  
 }
 
 *, *::before, *::after {
