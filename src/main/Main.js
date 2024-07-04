@@ -121,7 +121,7 @@ const MainBody = styled.div`
 `;
 
 const MainBodyRollingBannerAreaStlye = styled.div`
-  height: 70vh; // 뷰포트 높이의 100%
+  height: 50vh; // 뷰포트 높이의 100%
   width: 100%;
   display: flex;
   justify-content: center;
@@ -249,6 +249,83 @@ function MainBodyMovieListSection(){
   );
 }
 
+// -SearchResultList
+
+const SearchResultListAreaStyle = styled.div`
+  width: 100%;
+  margin-top: 40px;
+`;
+
+const SearchResultListArea = styled.ul`
+/*   display: flex;
+  margin-left: 50px;
+  align-items: center; */
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Adjust columns as needed */
+  gap: 10px; /* Adjust gap between 
+`;
+
+const SearchResultListImgLi = styled.li`
+  /* margin-left: 1.5em; */
+
+
+  background-color: lightblue;
+  text-align: center;
+  line-height: 50px;
+  margin: 5px;
+`;
+
+const SearchResultListImg = styled.img`
+  height: 300px;
+  width: auto;
+`;
+
+function SearchResultList(){
+  return(
+    <SearchResultListAreaStyle>
+          <SectionTitle># 검색 결과</SectionTitle>
+          <SearchResultListArea>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+             <SearchResultListImgLi>
+                <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
+             </SearchResultListImgLi>
+           
+
+          </SearchResultListArea>
+    </SearchResultListAreaStyle>
+  );
+}
+
 //footer
 const MainFooter = styled.div`
   height: 18vh;
@@ -262,6 +339,7 @@ const MainFooter = styled.div`
 export {
   MainContainer, MainHeader, MainBody, MainFooter,
   MainHeaderLogoArea, MainHeaderSearchArea, SearchBar, MainHeaderButtonArea,  Button,
+  MainBodyMovieListSection,
   MainBodyRollingBannerArea, MainBodyMovieListArea,
-  MainBodyMovieListSection
+  SearchResultList
 };

@@ -46,9 +46,11 @@ html, body {
   
 }
 
-*, *::before, *::after {
-  box-sizing: inherit;
-}
+/* 
+  *, *::before, *::after {
+    box-sizing: inherit;
+  } 
+*/
 
 #root {
   height: 100%;
