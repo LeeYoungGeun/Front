@@ -121,7 +121,7 @@ const MainBody = styled.div`
 `;
 
 const MainBodyRollingBannerAreaStlye = styled.div`
-  height: 50vh; // 뷰포트 높이의 100%
+  height: 60vh; // 뷰포트 높이의 100%
   width: 100%;
   display: flex;
   justify-content: center;
@@ -263,7 +263,7 @@ const SearchResultListArea = styled.ul`
 
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* Adjust columns as needed */
-  gap: 10px; /* Adjust gap between 
+  gap: 10px; 
 `;
 
 const SearchResultListImgLi = styled.li`
@@ -281,7 +281,7 @@ const SearchResultListImg = styled.img`
   width: auto;
 `;
 
-function SearchResultList(){
+function SearchResultListBody(){
   return(
     <SearchResultListAreaStyle>
           <SectionTitle># 검색 결과</SectionTitle>
@@ -341,5 +341,5 @@ export {
   MainHeaderLogoArea, MainHeaderSearchArea, SearchBar, MainHeaderButtonArea,  Button,
   MainBodyMovieListSection,
   MainBodyRollingBannerArea, MainBodyMovieListArea,
-  SearchResultList
+  SearchResultListBody
 };

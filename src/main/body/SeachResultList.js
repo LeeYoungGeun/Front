@@ -1,16 +1,16 @@
 import {
     MainBody,
-    SearchResultList
+    SearchResultListBody
   } from '../Main';
   
-  function SeachResultList() {
+  function SearchResultList() {
     
       return (
         <MainBody>
-            <SearchResultList/>
+            <SearchResultListBody/>
         </MainBody>
       );
     
     }
     
-    export default SeachResultList;
+    export default SearchResultList;
