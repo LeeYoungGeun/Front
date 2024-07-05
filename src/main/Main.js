@@ -7,6 +7,7 @@ import "swiper/css/free-mode";
 import MovieListImage1 from '../img/movieImg.jpg';
 import mainBodyRollingBanne1 from '../img/mainBodyRollingBanne1.jpg';
 import mainBodyRollingBanne2 from '../img/mainBodyRollingBanne2.jpg';
+import { Link } from "react-router-dom";
 
 // container
 const MainContainer = styled.div`
@@ -78,7 +79,7 @@ const SearchBar = () => {
   return (
       <>
         <SearchInput type="text" placeholder="검색어를 입력해 주세요." />
-        <SearchIcon />
+        <Link to="/search"><SearchIcon /></Link>
       </>
   );
 };
@@ -257,27 +258,17 @@ const SearchResultListAreaStyle = styled.div`
 `;
 
 const SearchResultListArea = styled.ul`
-/*   display: flex;
-  margin-left: 50px;
-  align-items: center; */
-
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Adjust columns as needed */
-  gap: 10px; 
+  grid-template-columns: repeat(6, 1fr); /* Adjust columns as needed */
+  gap: 1em; 
 `;
 
 const SearchResultListImgLi = styled.li`
-  /* margin-left: 1.5em; */
-
-
-  background-color: lightblue;
   text-align: center;
-  line-height: 50px;
   margin: 5px;
 `;
 
 const SearchResultListImg = styled.img`
-  height: 300px;
   width: auto;
 `;
 
@@ -319,8 +310,6 @@ function SearchResultListBody(){
              <SearchResultListImgLi>
                 <SearchResultListImg src={MovieListImage1} alt="Movie 1"/>
              </SearchResultListImgLi>
-           
-
           </SearchResultListArea>
     </SearchResultListAreaStyle>
   );

@@ -7,13 +7,9 @@ import {
 
 function Header() {
 
-  const handleReload = () => {
-    
-  };
-
   return (
     <MainHeader>
-        <MainHeaderLogoArea onClick={handleReload}>TFT</MainHeaderLogoArea>
+       <MainHeaderLogoArea><Link to="/">TFT</Link></MainHeaderLogoArea>
         <MainHeaderSearchArea>
         <SearchBar></SearchBar> 
         </MainHeaderSearchArea>
