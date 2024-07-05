@@ -8,6 +8,7 @@ import MovieListImage1 from '../img/movieImg.jpg';
 import mainBodyRollingBanne1 from '../img/mainBodyRollingBanne1.jpg';
 import mainBodyRollingBanne2 from '../img/mainBodyRollingBanne2.jpg';
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 // container
 const MainContainer = styled.div`
@@ -220,6 +221,18 @@ const SectionImg = styled.img`
   width: auto;
 `;
 
+// async function test () {
+//   let poster_path ='/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg';
+//   const image111 = await axios.get('https://image.tmdb.org/t/p/'+'w500'+poster_path).then(res => res.data);
+//   console.log("test");
+//   console.log(image111);
+//   return image111;
+// }
+
+
+const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
+const insideImg = '/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg';
+
 function MainBodyMovieListSection(){
   return(
       <MainBodyMovieListSectionStyle>
@@ -230,7 +243,7 @@ function MainBodyMovieListSection(){
               freeMode={true}
               modules={[FreeMode]}
           >
-              <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 1"/></MovieListSwiperSlide>
+              <MovieListSwiperSlide><SectionImg src={baseImageUrl+ insideImg} alt="Movie 1"/></MovieListSwiperSlide>
               <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 2"/></MovieListSwiperSlide>
               <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 3"/></MovieListSwiperSlide>
               <MovieListSwiperSlide><SectionImg src={MovieListImage1} alt="Movie 4"/></MovieListSwiperSlide>
