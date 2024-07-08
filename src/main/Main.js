@@ -113,7 +113,7 @@ const Button = styled.button`
     outline: none;
   }
 
-  /* 반응형 스타일 */
+
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 6px 10px;
