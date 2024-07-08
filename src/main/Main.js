@@ -216,7 +216,6 @@ const MovieListSwiperSlide = styled(SwiperSlide)`
 `;
 
 const SectionImg = styled.img`
-  margin-left: 1.5em;
   height: 220px;
   width: auto;
 `;
@@ -272,8 +271,9 @@ const SearchResultListAreaStyle = styled.div`
 
 const SearchResultListArea = styled.ul`
   display: grid;
-  grid-template-columns: repeat(6, 1fr); /* Adjust columns as needed */
+  grid-template-columns: repeat(8, 1fr); /* Adjust columns as needed */
   gap: 1em; 
+  margin-left: 3em;
 `;
 
 const SearchResultListImgLi = styled.li`
