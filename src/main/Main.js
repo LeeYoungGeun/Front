@@ -112,6 +112,23 @@ const Button = styled.button`
   &:focus {
     outline: none;
   }
+
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 6px 10px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+
+  /* 버튼이 줄바꿈되지 않도록 설정 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 `;
 
 // body

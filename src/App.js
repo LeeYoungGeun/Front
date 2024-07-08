@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { MainContainer } from './main/Main';
 import Header from './main/header/Header';
@@ -9,6 +9,7 @@ import Footer from './main/footer/Footer';
 import Login from './Member/Login';
 import SignUp from './Member/SignUp';
 import axios from 'axios';
+
 
 const options = {
   method: 'GET',
@@ -45,6 +46,8 @@ axios
 
 
 function App() {
+
+
 
   return (
     <MainContainer color='black'>
