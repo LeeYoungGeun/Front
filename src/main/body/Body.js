@@ -1,20 +1,18 @@
-import {
-  MainBody,
-  MainBodyRollingBannerArea,
-  MainBodyMovieListArea,
-  MainBodyMovieListSection
-} from '../Main';
+import styled from "styled-components";
+import {MainBody} from '../Main';
+import {MainBodyMovieListSection} from './MainBodyMovieListSection';
+import {MainBodyRollingBanner} from "./MainBodyRollingBanner";
+
+const MainBodyMovieListArea = styled.div`
+  width: 100%;
+`;
 
 function Body() {
 
     return (
       <MainBody>
-        <MainBodyRollingBannerArea/>
+        <MainBodyRollingBanner/>
         <MainBodyMovieListArea>
-          <MainBodyMovieListSection></MainBodyMovieListSection>
-          <MainBodyMovieListSection></MainBodyMovieListSection>
-          <MainBodyMovieListSection></MainBodyMovieListSection>
-          <MainBodyMovieListSection></MainBodyMovieListSection>
           <MainBodyMovieListSection></MainBodyMovieListSection>
         </MainBodyMovieListArea>
       </MainBody>
