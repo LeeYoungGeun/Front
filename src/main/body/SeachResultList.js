@@ -2,9 +2,8 @@ import styled from "styled-components";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {MainBody} from '../Main';
+import { useSearchParams } from "react-router-dom";
 //import MovieListImage1 from '../../img/movieImg.jpg';
-
-// -SearchResultList
 
 const SearchResultListAreaStyle = styled.div`
   width: 100%;
@@ -32,24 +31,31 @@ const SearchResultListImgLi = styled.li`
 
 const SearchResultListImg = styled.img`
   height: 250px;
+  cursor: pointer;
 `;
 
 //api base url 
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
+const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
 
-const searchParam = "마스크";
-
-const searchOptions = {
-    method: 'GET',
-    url: 'https://api.themoviedb.org/3/search/movie',
-    params: {language: 'ko', include_adult: 'false', query : searchParam},
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQxODM2Mi42MDI5NzUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.J5Xq5UC7-KvJ4rCa02rOKrlSmo9M-23Fc_gEqC6wrJY'
-    }
-  };
+// test
+// const searchParam = "마스크";
 
   function SearchResultList() {
+        
+        let [searchParamVal] = useSearchParams();
+        let searchParam = searchParamVal.get('searchParam');
+        console.log("searchParam : " + searchParam);
+
+        const searchOptions = {
+            method: 'GET',
+            url: 'https://api.themoviedb.org/3/search/movie',
+            params: {language: 'ko', include_adult: 'false', query : searchParam},
+            headers: {
+              accept: 'application/json',
+              Authorization: accessToken
+            }
+          };
 
         let [results, setResults] = useState();
 
@@ -59,15 +65,15 @@ const searchOptions = {
             .request(searchOptions)
             .then(function(response){
                 setResults(response.data.results);
-                console.log('api req : ');
-                console.log(response.data.results[0].id);
-                console.log(response.data.results[0].title);
-                console.log(response.data.results[0].poster_path);
+                // console.log('api req : ');
+                // console.log(response.data.results[0].id);
+                // console.log(response.data.results[0].title);
+                // console.log(response.data.results[0].poster_path);
             })
             .catch(function (error) {
             console.log(error);
         });
-      },[])
+      },[results])
 
       console.log("results : " + results);
 
@@ -82,8 +88,7 @@ const searchOptions = {
                         <SearchResultListImg src={baseImageUrl + movie.poster_path} alt={`Search Results Movie ${index + 1}`} />
                     </SearchResultListImgLi>
                     ))
-                : null}    
-
+                : <h2 style={{'fontSize' : '1.5em'}}>결과없음</h2>}    
                 {/* test <SearchResultListImg src={MovieListImage1} alt="Movie 1"/> */}
               </SearchResultListArea>
           </SearchResultListAreaStyle>

@@ -2,15 +2,15 @@ import styled from "styled-components";
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import { FaSearch } from 'react-icons/fa';
 import { MainHeader } from "../Main";
+import SearchInputComponent from "../body/SearchInputComponent";
 
 const MainHeaderLogoArea = styled.div`
   width: 10%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: hotpink;
+  color: red;
   font-size: 32px;
   font-weight: bold;
   cursor: pointer;
@@ -23,36 +23,12 @@ const MainHeaderSearchArea = styled.div`
   align-items: center;
 `;
 
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 10px;
-  padding-right: 40px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.15);
-  color: white;
-  outline: none;
-
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
-`;
-
-const SearchIcon = styled(FaSearch)`
-  position: relative;
-  left: -35px;
-  color: white;
-  cursor: pointer;
-`;
-
 const SearchBar = () => {
   return (
-      <>
-        <SearchInput type="text" placeholder="검색어를 입력해 주세요." />
-        <Link to="/search"><SearchIcon /></Link>
-      </>
+    <SearchInputComponent 
+      type="text" 
+      placeholder="검색어를 입력해 주세요." 
+    />
   );
 };
 
@@ -76,7 +52,7 @@ const Button = styled.button`
   
   &:hover {
     background-color: transparent;
-    color: hotpink;
+    color: red;
     border-color: white;
   }
 
