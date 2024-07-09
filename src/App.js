@@ -12,7 +12,7 @@ import SignUp from './Member/SignUp';
 function App() {
 
   return (
-    <MainContainer>
+    <MainContainer color='black'>
       <Header/>
       <Routes>
         <Route path='/' element={<Body />} /> 
