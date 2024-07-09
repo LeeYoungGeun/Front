@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay , FreeMode } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules';
 import "swiper/css";
 import "swiper/css/free-mode";
 import mainBodyRollingBanne1 from '../../img/mainBodyRollingBanne1.jpg';
