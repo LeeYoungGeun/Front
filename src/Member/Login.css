@@ -1,4 +1,6 @@
-input:focus {outline: none;}
+input:focus {
+  outline: none;
+}
 
 .login-container {
   display: flex;
@@ -21,14 +23,6 @@ input:focus {outline: none;}
   margin-bottom: 28px;
 }
 
-.login-form p {
-  color: #fff;
-  font-size: 20px;
-  margin-bottom: 40px;
-  cursor: pointer;
-  float: left; 
-}
-
 .login-form input {
   width: 100%;
   height: 50px;
@@ -46,7 +40,7 @@ input:focus {outline: none;}
 }
 
 .login-form button {
-  width: 113%;
+  width: 368px;
   height: 50px;
   background-color: #e50914;
   color: #fff;
@@ -60,5 +54,13 @@ input:focus {outline: none;}
 }
 
 .login-form button:hover {
-  background-color: rgb(199, 7, 17)
+  background-color: rgb(199, 7, 17);
+}
+
+.kakao img {
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin-top: 10px;
+  width: 368px;
 }

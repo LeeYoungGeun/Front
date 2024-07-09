@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import api from "./api";
-import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import api from "./api";
+import "./Login.css";
 
 function Login() {
   const [loginData, setLoginData] = useState({
@@ -23,10 +23,8 @@ function Login() {
       const response = await api.post('/api/auth/login', loginData);
       console.log(response.data);
 
-      const isSecure = window.location.protocol === 'https:';
-
-      setCookie('accessToken', response.data.accessToken, { path: '/', secure: isSecure, sameSite: 'Lax' });
-      setCookie('refreshToken', response.data.refreshToken, { path: '/', secure: isSecure, sameSite: 'Lax' });
+      setCookie('accessToken', response.data.accessToken, { path: '/', sameSite: 'Lax' });
+      setCookie('refreshToken', response.data.refreshToken, { path: '/', sameSite: 'Lax' });
 
       // 로그인 성공 시 리디렉션
       navigate('/');
@@ -38,30 +36,38 @@ function Login() {
     }
   };
 
+  const handleKakaoLogin = () => {
+    window.location.href = "http://localhost:8090/oauth2/authorization/kakao";
+  };
+
   return (
-    <div>
-      <div className="login-container">
-        <form className="login-form" onSubmit={handleLogin}>
-          <h2>로그인</h2>
-          <input
-            name="mid"
-            value={loginData.mid}
-            onChange={handleLoginChange}
-            placeholder="아이디"
-          />
-          <input
-            name="mpw"
-            type="password"
-            value={loginData.mpw}
-            onChange={handleLoginChange}
-            placeholder="비밀번호"
-          />
-          <button type="submit">로그인</button>
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleLogin}>
+        <h2>로그인</h2>
+        <input
+          name="mid"
+          value={loginData.mid}
+          onChange={handleLoginChange}
+          placeholder="아이디"
+        />
+        <input
+          name="mpw"
+          type="password"
+          value={loginData.mpw}
+          onChange={handleLoginChange}
+          placeholder="비밀번호"
+        />
+        <button type="submit">로그인</button>
+        <div className="kakao">
+          <p onClick={handleKakaoLogin}>
+            <img src="img/kakao_login.png"/>
+          </p>
           <Link to="/SignUp"><p>회원가입</p></Link>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }
 
 export default Login;
+
