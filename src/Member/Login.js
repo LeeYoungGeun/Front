@@ -41,33 +41,34 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
-        <h2>로그인</h2>
-        <input
-          name="mid"
-          value={loginData.mid}
-          onChange={handleLoginChange}
-          placeholder="아이디"
-        />
-        <input
-          name="mpw"
-          type="password"
-          value={loginData.mpw}
-          onChange={handleLoginChange}
-          placeholder="비밀번호"
-        />
-        <button type="submit">로그인</button>
-        <div className="kakao">
-          <p onClick={handleKakaoLogin}>
-            <img src="img/kakao_login.png"/>
-          </p>
-          <Link to="/SignUp"><p>회원가입</p></Link>
-        </div>
-      </form>
+    <div className="background">
+      <div className="login-container">
+        <form className="login-form" onSubmit={handleLogin}>
+          <h2>로그인</h2>
+          <input
+            name="mid"
+            value={loginData.mid}
+            onChange={handleLoginChange}
+            placeholder="아이디"
+          />
+          <input
+            name="mpw"
+            type="password"
+            value={loginData.mpw}
+            onChange={handleLoginChange}
+            placeholder="비밀번호"
+          />
+          <button type="submit">로그인</button>
+          <div className="kakao">
+            <p onClick={handleKakaoLogin}>
+              <img src="img/kakao_login.png" alt="카카오 로그인" />
+            </p>
+            <Link to="/SignUp"><p>회원가입</p></Link>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
 
 export default Login;
-

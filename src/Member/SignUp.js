@@ -36,7 +36,7 @@ function SignUp(){
 
 
     return(
-        <div>
+        <div className="background">
         <div className="signup-container">
           <form className="signup-form" onSubmit={handleSignUp}>
             <h2>회원가입</h2>
