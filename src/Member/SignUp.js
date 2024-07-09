@@ -19,20 +19,63 @@ function SignUp(){
         setSignUpData({ ...signUpData, [e.target.name]: e.target.value });
       };
 
-      const navigate = useNavigate();
+     
 
-      const handleSignUp = async (e) => {
+      
+
+    const navigate = useNavigate();
+
+    const handleSignUp = async (e) => {
         e.preventDefault();
-        try {
-          const response = await api.post('/api/auth/signUp', signUpData);
-          console.log(response.data);
-          // 회원가입 성공 처리
-          alert("가입에 성공하셨습니다.")
-          navigate('/login')
-        } catch (error) {
-          console.error('회원가입 실패:', error);
-        }
-      };
+
+        const { mid, mpw, checkMpw, mname, mnick, memail, mphone } = signUpData;
+
+     // 빈 값 확인
+     if (!mid) {
+      alert("아이디를 입력해주세요");
+      return;
+    }
+    if (!mpw) {
+      alert("비밀번호를 입력해주세요");
+    return;
+    }
+    if (!mname) {
+      alert("이름을 입력해주세요");
+    return;
+    }
+
+    if (!mnick) {
+      alert("닉네임을 입력해주세요");
+    return;
+    }
+
+    if (!memail) {
+      alert("이메일을 입력해주세요");
+    return;
+    }
+
+
+      // 비밀번호 확인
+     if (mpw !== checkMpw) {
+       alert("비밀번호가 일치하지 않습니다.");
+       return;
+     }
+
+     try {
+      const response = await api.post('/api/auth/signUp', signUpData);
+      console.log(response.data);
+      // 회원가입 성공 처리
+      alert("가입에 성공하셨습니다.");
+      navigate('/login');
+    } catch (error) {
+      if (error.response && error.response.status) {
+        alert("이미 존재하는 아이디 및 닉네임입니다.");
+      } else {
+        console.error('회원가입 실패:', error);
+        alert("회원가입에 실패하셨습니다.");
+      }
+    }
+  };
 
 
     return(
