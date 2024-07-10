@@ -177,9 +177,6 @@ function MainBodyMovieListSection(){
               </MovieListSwiperSlide>
             ))
           : null}
-
-          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
-
           </MovieListSwiper>
 
           <SectionTitle>개봉 예정작 20</SectionTitle>
@@ -196,10 +193,6 @@ function MainBodyMovieListSection(){
               </MovieListSwiperSlide>
             ))
           : null}
-
-          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
-
-
           </MovieListSwiper>
           
           <SectionTitle>인기영화 20</SectionTitle>
@@ -216,9 +209,6 @@ function MainBodyMovieListSection(){
               </MovieListSwiperSlide>
             ))
           : null}
-
-          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
-
           </MovieListSwiper>
 
           <SectionTitle>최고평점 20</SectionTitle>
