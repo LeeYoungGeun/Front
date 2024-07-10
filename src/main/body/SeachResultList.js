@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import {MainBody} from '../Main';
 import { useSearchParams } from "react-router-dom";
+import MovieModal from "../../modal/MovieModal";
 //import MovieListImage1 from '../../img/movieImg.jpg';
 
 const SearchResultListAreaStyle = styled.div`
@@ -42,7 +43,9 @@ const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDN
 // const searchParam = "마스크";
 
   function SearchResultList() {
-        
+
+        const [selectedMovie, setSelectedMovie] = useState(null);
+
         let [searchParamVal] = useSearchParams();
         let searchParam = searchParamVal.get('searchParam');
         console.log("searchParam : " + searchParam);
@@ -84,7 +87,7 @@ const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDN
               <SearchResultListArea>
                 {Array.isArray(results) && results.length > 0
                 ? results.map((movie, index) => (
-                    <SearchResultListImgLi key={index}>
+                    <SearchResultListImgLi key={index} onClick={() => setSelectedMovie(movie)}>
                         <SearchResultListImg src={baseImageUrl + movie.poster_path} alt={`Search Results Movie ${index + 1}`} />
                     </SearchResultListImgLi>
                     ))
@@ -92,6 +95,7 @@ const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDN
                 {/* test <SearchResultListImg src={MovieListImage1} alt="Movie 1"/> */}
               </SearchResultListArea>
           </SearchResultListAreaStyle>
+          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
         </MainBody>
       );
     
