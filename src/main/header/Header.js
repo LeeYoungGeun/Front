@@ -60,7 +60,6 @@ const Button = styled.button`
     outline: none;
   }
 
-
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 6px 10px;
@@ -79,11 +78,12 @@ const Button = styled.button`
 `;
 
 function Header() {
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
+  const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("쿠키 확인:", cookies.accessToken); // 쿠키 값을 확인하기 위해 콘솔에 출력
     if (cookies.accessToken) {
       setIsAuthenticated(true);
     } else {
@@ -105,7 +105,7 @@ function Header() {
         <Link to="/">TFT</Link>
       </MainHeaderLogoArea>
       <MainHeaderSearchArea>
-        <SearchBar></SearchBar>
+        <SearchBar />
       </MainHeaderSearchArea>
       <MainHeaderButtonArea>
         {isAuthenticated ? (
