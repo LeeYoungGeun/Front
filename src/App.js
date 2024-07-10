@@ -8,6 +8,14 @@ import SearchResultList from './main/body/SeachResultList';
 import Footer from './main/footer/Footer';
 import Login from './Member/Login';
 import SignUp from './Member/SignUp';
+import Mypage from './Member/Mypage'
+import Modify from './Member/Modify';
+
+
+
+
+
+
 
 function App() {
 
@@ -19,6 +27,9 @@ function App() {
         <Route path='/search' element={<SearchResultList />} /> 
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
+        <Route path='/modify' element={<Modify />} />
+        <Route path='/mypage' element={<Mypage />} />
+
       </Routes>
       <Footer/>
     </MainContainer>
