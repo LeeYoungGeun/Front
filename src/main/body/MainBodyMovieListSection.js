@@ -5,6 +5,8 @@ import "swiper/css/free-mode";
 import { FreeMode } from 'swiper/modules';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
+import MovieModal from "../../modal/MovieModal";
+
 //test img
 //import MovieListImage1 from '../img/movieImg.jpg';
 
@@ -103,6 +105,8 @@ const topRatedOptions = {
 
 function MainBodyMovieListSection(){
   
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
   //현재 상영작 20
   let [row1, setRow1] = useState();
   //개봉 예정작 20
@@ -168,11 +172,14 @@ function MainBodyMovieListSection(){
           > 
           {Array.isArray(row1) && row1.length > 0
           ? row1.map((movie, index) => (
-              <MovieListSwiperSlide key={index}>
+              <MovieListSwiperSlide key={index} onClick={() => setSelectedMovie(movie)}>
                 <SectionImg src={baseImageUrl + movie.poster_path} alt={`Now Playing 20 Movie ${index + 1}`} />
               </MovieListSwiperSlide>
             ))
           : null}
+
+          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
+
           </MovieListSwiper>
 
           <SectionTitle>개봉 예정작 20</SectionTitle>
@@ -184,11 +191,15 @@ function MainBodyMovieListSection(){
           > 
           {Array.isArray(row2) && row2.length > 0
           ? row2.map((movie, index) => (
-              <MovieListSwiperSlide key={index}>
+              <MovieListSwiperSlide key={index} onClick={() => setSelectedMovie(movie)}>
                 <SectionImg src={baseImageUrl + movie.poster_path} alt={`Upcomming 20 Movie ${index + 1}`} />
               </MovieListSwiperSlide>
             ))
           : null}
+
+          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
+
+
           </MovieListSwiper>
           
           <SectionTitle>인기영화 20</SectionTitle>
@@ -200,11 +211,14 @@ function MainBodyMovieListSection(){
           > 
           {Array.isArray(row3) && row3.length > 0
           ? row3.map((movie, index) => (
-              <MovieListSwiperSlide key={index}>
+              <MovieListSwiperSlide key={index} onClick={() => setSelectedMovie(movie)}>
                 <SectionImg src={baseImageUrl + movie.poster_path} alt={`Popular Movie 20  ${index + 1}`} />
               </MovieListSwiperSlide>
             ))
           : null}
+
+          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
+
           </MovieListSwiper>
 
           <SectionTitle>최고평점 20</SectionTitle>
@@ -216,11 +230,14 @@ function MainBodyMovieListSection(){
           > 
           {Array.isArray(row4) && row4.length > 0
           ? row4.map((movie, index) => (
-              <MovieListSwiperSlide key={index}>
+              <MovieListSwiperSlide key={index} onClick={() => setSelectedMovie(movie)}>
                 <SectionImg src={baseImageUrl + movie.poster_path} alt={`Top Rated 20 Movie ${index + 1}`} />
               </MovieListSwiperSlide>
             ))
           : null}
+
+          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
+
           </MovieListSwiper>
       </MainBodyMovieListSectionStyle>
       
