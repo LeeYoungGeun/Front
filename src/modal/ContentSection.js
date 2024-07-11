@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { FaPlay, FaStar } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -26,10 +27,11 @@ const MovieDetailsContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px 20px;
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 `;
 
 const MovieDetailsColumn = styled.div`
+  font-size: 15px;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 5px 10px;
@@ -65,14 +67,30 @@ const GenreList = styled.ul`
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
 `;
 
 const GenreItem = styled.li`
-  background-color: #e50914;
-  color: white;
+  background-color: black;
+  color: red;
   padding: 5px 10px;
   border-radius: 20px;
   font-size: 14px;
+  
+  /* 3D 효과 적용 */
+  box-shadow: 0 0 0 1px #000000 inset,
+              0 0 0 2px rgba(255,255,255,0.15) inset,
+              0 8px 0 0 rgba(0, 0, 0, .7),
+              0 8px 0 1px rgba(255,0,0,.4),
+              0 8px 8px 1px rgba(0,0,0,0.5);
+  transition: all 0.1s ease;
+  
+  &:active {
+    box-shadow: 0 0 0 1px #000000 inset,
+                0 0 0 2px rgba(255,255,255,0.15) inset,
+                0 0 0 1px rgba(255,0,0,0.4);
+    transform: translateY(8px);
+  }
 `;
 
 const MovieDescriptionContainer = styled.div`
@@ -83,7 +101,7 @@ const MovieDescriptionContainer = styled.div`
 const MovieDescriptionContent = styled.p`
   margin-bottom: 10px;
   padding: 10px 0;
-  font-size: 18px;
+  font-size: 16px;
 `;
 
 const MoreButton = styled.span`
@@ -125,6 +143,7 @@ const CastImage = styled.img`
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
+  margin-top: 10px;
 `;
 
 const ContentSection = ({ 
@@ -135,13 +154,19 @@ const ContentSection = ({
   cast, 
   productionCompanies, 
   trailerId, 
-  setShowTrailer 
+  setShowTrailer, 
+  onGenreClick
 }) => {
   const [showFullOverview, setShowFullOverview] = useState(false);
+  const navigate = useNavigate();
 
   const truncateOverview = (text, maxLength) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength);
+  };
+
+  const handleGenreClick = (genreId, genreName) => {
+    navigate(`/search?genre=${genreId}`, { state: { genreName } });
   };
 
   return (
@@ -171,7 +196,12 @@ const ContentSection = ({
 
       <GenreList>
         {genres && genres.map(genre => (
-          <GenreItem key={genre.id}>{genre.name}</GenreItem>
+          <GenreItem 
+            key={genre.id} 
+            onClick={() => handleGenreClick(genre.id, genre.name)}
+          >
+            {genre.name}
+          </GenreItem>
         ))}
       </GenreList>
 

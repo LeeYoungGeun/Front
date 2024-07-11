@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled, { css } from "styled-components";
 import { FaTimes } from 'react-icons/fa';
-import MovieTitle from './TitleSection';
 import YoutubeIframe from './YoutubeModal';
 import useMovieDetails from './useMovieDetails';
 import useReviews from './useReviews';
@@ -93,20 +92,33 @@ const MovieInfo = styled.div`
   max-height: 100%;
 `;
 
-const MovieModal = ({ movie, onClose }) => {
+const MovieModal = ({ movie, onClose, onGenreClick }) => {
   const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
   const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews();
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
 
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+  
   useEffect(() => {
     // 모달이 열릴 때 body의 스크롤을 막습니다.
     document.body.style.overflow = 'hidden';
     
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        handleClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEsc);
+
     // 컴포넌트가 언마운트될 때 (모달이 닫힐 때) body의 스크롤을 다시 활성화합니다.
     return () => {
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [handleClose]);
 
   if (!movie) return null;
 
@@ -135,6 +147,7 @@ const MovieModal = ({ movie, onClose }) => {
                 productionCompanies={productionCompanies}
                 trailerId={trailerId}
                 setShowTrailer={setShowTrailer}
+                onGenreClick={onGenreClick}
               />
 
               <ReviewSection 
