@@ -4,6 +4,7 @@ import { useCookies } from "react-cookie";
 import api from "./api";
 import "./Mypage.css";
 
+
 function mypage() {
  
 
@@ -12,9 +13,9 @@ function mypage() {
       <div className="mypage-container">
         <div className="mypage-form">
           <h1>마이페이지</h1>
-          <button className="modify">회원정보수정</button>
-          <button className="modify">비밀번호수정</button>
-          <button className="danger">계정탈퇴</button>
+          <Link to="/modify"><button className="modify">회원정보수정</button></Link>
+          <Link to="/modifypw"><button className="modify">비밀번호변경</button></Link>
+          <Link to="/checkpw"><button className="danger">계정탈퇴</button></Link>
         </div>
       </div>
     </div>
