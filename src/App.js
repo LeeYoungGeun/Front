@@ -10,6 +10,7 @@ import Login from './Member/Login';
 import SignUp from './Member/SignUp';
 import Mypage from './Member/Mypage'
 import Modify from './Member/Modify';
+import CheckPw from './Member/CheckPw';
 
 
 
@@ -29,6 +30,7 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/modify' element={<Modify />} />
         <Route path='/mypage' element={<Mypage />} />
+        <Route path='/checkpw' element={<CheckPw />} />
 
       </Routes>
       <Footer/>

@@ -46,6 +46,10 @@ function SignUp() {
       alert("이메일을 입력해주세요");
       return;
     }
+    if (!mphone) {
+      alert("번호를 입력해주세요");
+      return;
+    }
 
     // 비밀번호 확인
     if (mpw !== checkMpw) {

@@ -13,6 +13,7 @@ function mypage() {
         <div className="mypage-form">
           <h1>마이페이지</h1>
           <button className="modify">회원정보수정</button>
+          <button className="modify">비밀번호수정</button>
           <button className="danger">계정탈퇴</button>
         </div>
       </div>
