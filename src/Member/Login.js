@@ -41,7 +41,7 @@ function Login() {
   };
 
   return (
-    <div className="background">
+    <div className="loginBackground">
       <div className="login-container">
         <form className="login-form" onSubmit={handleLogin}>
           <h2>로그인</h2>
