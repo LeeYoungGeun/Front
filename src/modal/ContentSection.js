@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { FaPlay, FaStar } from 'react-icons/fa';
+import { FaPlay } from 'react-icons/fa';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {

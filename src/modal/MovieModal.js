@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import styled, { css } from "styled-components";
 import { FaTimes } from 'react-icons/fa';
-import MovieTitle from './TitleSection';
 import YoutubeIframe from './YoutubeModal';
 import useMovieDetails from './useMovieDetails';
 import useReviews from './useReviews';
@@ -95,7 +94,7 @@ const MovieInfo = styled.div`
 
 const MovieModal = ({ movie, onClose }) => {
   const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
-  const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews();
+  const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews(movie.id,movie.title);
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
 
   useEffect(() => {
