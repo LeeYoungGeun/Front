@@ -3,13 +3,13 @@ import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./Modify.css";
 
-
 export function Modify() {
   const [memberData, setMemberData] = useState({
     mid: "",
     mnick: "",
     memail: "",
-    mphone: ""
+    mphone: "",
+    mpw: ""
   });
 
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ export function Modify() {
       api.get("/api/auth/modify")
         .then(response => {
           const { mid, mnick, memail, mphone } = response.data;
-          const data = { mid, mnick, memail, mphone };
+          const data = { mid, mnick, memail, mphone, mpw: "" }; // 비밀번호는 빈 문자열로 초기화
           setMemberData(data);
           sessionStorage.setItem("memberData", JSON.stringify(data));
         })
@@ -36,7 +36,11 @@ export function Modify() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.put("/api/auth/modify", memberData)
+    const dataToSend = { ...memberData };
+    if (!dataToSend.mpw) {
+      delete dataToSend.mpw; // 비밀번호가 비어 있으면 삭제
+    }
+    api.put("/api/auth/modify", dataToSend)
       .then(response => {
         alert(response.data);
         sessionStorage.removeItem("memberData");
@@ -59,6 +63,7 @@ export function Modify() {
           <input name="mnick" placeholder="닉네임" value={memberData.mnick} onChange={handleChange} />
           <input name="memail" placeholder="이메일" value={memberData.memail} onChange={handleChange} />
           <input name="mphone" placeholder="핸드폰번호" value={memberData.mphone} onChange={handleChange} />
+          <input name="mpw" placeholder="비밀번호" type="password" value={memberData.mpw} onChange={handleChange} />
           <button type="submit">완료</button>
         </form>
       </div>
@@ -75,7 +80,7 @@ export function ModifyCheck() {
     api.post("/api/auth/checkPw", { mpw }, { params: { removeCheck: false } })
       .then(response => {
         alert(response.data);
-        navigate("/api/auth/modifypw");
+        navigate("/modify");
       })
       .catch(error => console.error(error));
   };
@@ -86,40 +91,6 @@ export function ModifyCheck() {
         <form className="modify-form" onSubmit={handleSubmit}>
           <h2>비밀번호를 입력해주세요</h2>
           <input placeholder="비밀번호 입력" type="password" value={mpw} onChange={(e) => setMpw(e.target.value)} />
-          <button type="submit">완료</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
-export function ModifyPw() {
-  const [mpw, setMpw] = useState("");
-  const [checkMpw, setCheckMpw] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (mpw !== checkMpw) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-    api.put("/api/auth/modify", { mpw, checkMpw })
-      .then(response => {
-        alert(response.data);
-        sessionStorage.removeItem("memberData");
-        navigate("/mypage");
-      })
-      .catch(error => console.error(error));
-  };
-
-  return (
-    <div className="modifyBackground">
-      <div className="modify-container">
-        <form className="modify-form" onSubmit={handleSubmit}>
-          <h2>변경할 비밀번호 입력</h2>
-          <input placeholder="비밀번호 입력" type="password" value={mpw} onChange={(e) => setMpw(e.target.value)} />
-          <input placeholder="비밀번호 재입력" type="password" value={checkMpw} onChange={(e) => setCheckMpw(e.target.value)} />
           <button type="submit">완료</button>
         </form>
       </div>

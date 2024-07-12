@@ -9,7 +9,7 @@ import Footer from './main/footer/Footer';
 import Login from './Member/Login';
 import SignUp from './Member/SignUp';
 import Mypage from './Member/Mypage';
-import { Modify, ModifyCheck, ModifyPw } from './Member/Modify'; 
+import { Modify, ModifyCheck} from './Member/Modify'; 
 import CheckPw from './Member/CheckPw';
 import { useCookies } from 'react-cookie';
 import { setAuthToken } from './Member/api';
@@ -33,7 +33,6 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/modify' element={<Modify />} />
         <Route path='/modifycheck' element={<ModifyCheck />} />
-        <Route path='/modifypw' element={<ModifyPw />} />
         <Route path='/mypage' element={<Mypage />} />
         <Route path='/checkpw' element={<CheckPw />} />
       </Routes>
