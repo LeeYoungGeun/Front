@@ -111,6 +111,8 @@ function Header() {
         {isAuthenticated ? (
           <>
             <Button onClick={handleLogout}>로그아웃</Button>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <Link to="mypage"><Button>내계정</Button></Link>
           </>
         ) : (
           <>
