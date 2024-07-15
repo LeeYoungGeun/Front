@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import api, { setAuthToken } from './api';
-import './Login.css'; // CSS 파일을 포함합니다.
+import './Login.css';
 
 function Login() {
   const [loginData, setLoginData] = useState({
     mid: '',
     mpw: ''
   });
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
+
+  
+  const [cookies, setCookie] = useCookies(['accessToken', 'refreshToken']);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = cookies.accessToken || localStorage.getItem('accessToken');
+    const accessToken = cookies.accessToken;
     if (accessToken) {
       setAuthToken(accessToken);
     }
