@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import api from "./api";
 import { useNavigate } from "react-router-dom";
-import "./Modify.css";
 import { useCookies } from "react-cookie";
+import "./Modify.css";
 
 export function Modify() {
-  //회원저장 변수 State
   const [memberData, setMemberData] = useState({
     mid: "",
     mnick: "",
@@ -14,14 +13,10 @@ export function Modify() {
     mpw: ""
   });
 
-  //useCookies훅을 사용하여 토큰를 가져옴.
   const [cookies] = useCookies(['accessToken']);
-
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    //토큰이 없으면 접근불가.
     if (!cookies.accessToken) {
       alert("권한이 없습니다.");
       navigate("/login");
@@ -29,15 +24,14 @@ export function Modify() {
   }, [cookies, navigate]);
 
   useEffect(() => {
-    //서버에 데이터 불러온 세션 저장.
-    const storedMemberData = sessionStorage.getItem("memberData");  
+    const storedMemberData = sessionStorage.getItem("memberData");
     if (storedMemberData) {
       setMemberData(JSON.parse(storedMemberData));
     } else {
       api.get("/api/auth/modify")
         .then(response => {
           const { mid, mnick, memail, mphone } = response.data;
-          const data = { mid, mnick, memail, mphone, mpw: "" }; // 비밀번호는 빈 문자열로 초기화
+          const data = { mid, mnick, memail, mphone, mpw: "" };
           setMemberData(data);
           sessionStorage.setItem("memberData", JSON.stringify(data));
         })
@@ -45,23 +39,45 @@ export function Modify() {
     }
   }, []);
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const { mnick, memail, mphone } = memberData;
+
+    // 빈 값 확인
+    if (!mnick) {
+      alert("닉네임을 입력해주세요");
+      return;
+    }
+    if (!memail) {
+      alert("이메일을 입력해주세요");
+      return;
+    }
+    if (!mphone) {
+      alert("핸드폰 번호를 입력해주세요");
+      return;
+    }
+
     const dataToSend = { ...memberData };
     if (!dataToSend.mpw) {
-      delete dataToSend.mpw; // 수정페이지 비밀번호가 비어있으면 기존 비밀번호 유지.
+      delete dataToSend.mpw;
     }
-    api.put("/api/auth/modify", dataToSend)
-      .then(response => {
-        alert(response.data);
-        sessionStorage.removeItem("memberData");  //수정이 완료되면 세션에 저장한 데이터 제거.
-        navigate("/mypage");  // 수정 후 mypage로 이동
-      })
-      .catch(error => console.error(error));
+
+    try {
+      const response = await api.put("/api/auth/modify", dataToSend);
+      alert(response.data);
+      sessionStorage.removeItem("memberData");
+      navigate("/mypage");
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data);
+      } else {
+        console.error(error);
+        alert("수정 중 오류가 발생했습니다.");
+      }
+    }
   };
 
-  //입력값이 변경될 때 상태변수 변경.
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMemberData({ ...memberData, [name]: value });
@@ -83,6 +99,7 @@ export function Modify() {
     </div>
   );
 }
+
 
 export function ModifyCheck() {
   //비밀번호를 저장할 변수 
