@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import api from "./api";
 import "./Mypage.css";
 
+function Mypage() {
+  const [cookies] = useCookies(['accessToken']);
+  const navigate = useNavigate();
 
-function mypage() {
- 
+  useEffect(() => {
+    if (!cookies.accessToken) {
+      alert("권한이 없습니다.");
+      navigate("/login");
+    }
+  }, [cookies, navigate]);
 
   return (
     <div className="mypageBackground">
@@ -21,4 +28,4 @@ function mypage() {
   );
 }
 
-export default mypage;
+export default Mypage;

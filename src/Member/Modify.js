@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "./api";
 import { useNavigate } from "react-router-dom";
 import "./Modify.css";
+import { useCookies } from "react-cookie";
 
 export function Modify() {
   const [memberData, setMemberData] = useState({
@@ -11,8 +12,17 @@ export function Modify() {
     mphone: "",
     mpw: ""
   });
+  const [cookies] = useCookies(['accessToken']);
+
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!cookies.accessToken) {
+      alert("권한이 없습니다.");
+      navigate("/login");
+    }
+  }, [cookies, navigate]);
 
   useEffect(() => {
     const storedMemberData = sessionStorage.getItem("memberData");  //서버에 데이터 불러온 세션 저장.
@@ -74,6 +84,15 @@ export function Modify() {
 export function ModifyCheck() {
   const [mpw, setMpw] = useState("");
   const navigate = useNavigate();
+
+  const [cookies] = useCookies(['accessToken']);
+
+  useEffect(() => {
+    if (!cookies.accessToken) {
+      alert("권한이 없습니다.");
+      navigate("/login");
+    }
+  }, [cookies, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

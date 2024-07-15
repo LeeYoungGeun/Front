@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import api from "./api";
 import "./SignUp.css";
 
-function CheckPw() {
+function Remove() {
   const [mpw, setMpw] = useState("");
   const [cookies, removeCookie] = useCookies(['accessToken', 'refreshToken']);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!cookies.accessToken) {
+      alert("권한이 없습니다.");
+      navigate("/login");
+    }
+  }, [cookies, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,4 +49,4 @@ function CheckPw() {
   );
 }
 
-export default CheckPw;
+export default Remove;
