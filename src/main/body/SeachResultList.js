@@ -104,19 +104,45 @@ const SectionTitle = styled.h1`
   display: flex;
   align-items: center;
 `;
+
 const SearchResultListArea = styled.ul`
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* Adjust columns as needed */
+  grid-template-columns: repeat(auto-fill, 167px);
+  gap: 10px;
+  justify-content: center;
   margin-left: 3em;
+  margin-right: 3em;
 `;
+
 const SearchResultListImgLi = styled.li`
   text-align: center;
   margin: 5px;
+  width: 167px;
+  height: 250px;
 `;
+
 const SearchResultListImg = styled.img`
   height: 250px;
+  width: 167px;
   cursor: pointer;
 `;
+
+const NoPosterAvailable = styled.div`
+  height: 250px;
+  width: 167px;
+  background-color: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  border: 1px solid #ddd;
+  cursor: pointer;
+`;
+
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
 
@@ -216,19 +242,33 @@ function SearchResultList({ clearSearchValue }) {
     <MainBody>
       <SearchResultListAreaStyle>
         <SectionTitle>
-          {searchParam ? `# 검색 결과: ${searchParam}` : `# ${genreName} 장르`}
+          {searchParam 
+            ? `타이틀 #${searchParam} 로 검색하신 결과입니다.` 
+            : genreName 
+            ? `장르 #${genreName} 로 검색하신 결과입니다.`
+            : keyword
+            ? `키워드 #${keyword} 로 검색하신 결과입니다.`
+            : '검색 결과'}
         </SectionTitle>
         <SearchResultListArea>
           {Array.isArray(results) && results.length > 0
             ? results.map((movie, index) => (
               <SearchResultListImgLi key={index} onClick={() => setSelectedMovie(movie)}>
-                <SearchResultListImg 
-                  src={movie.poster_path ? baseImageUrl + movie.poster_path : '/path/to/placeholder/image.jpg'} 
-                  alt={`Search Results Movie ${index + 1}`} 
-                />
+                {movie.poster_path ? (
+                  <SearchResultListImg 
+                    src={`${baseImageUrl}${movie.poster_path}`}
+                    alt={movie.title || `Search Results Movie ${index + 1}`}
+                  />
+                ) : (
+                  <NoPosterAvailable>
+                    <div>No</div>
+                    <div>Poster</div>
+                    <div>Available</div>
+                  </NoPosterAvailable>
+                )}
               </SearchResultListImgLi>
             ))
-            : <h2 style={{ 'fontSize': '1.5em' }}>결과없음</h2>}
+          : <h2 style={{ 'fontSize': '1.5em' }}>결과없음</h2>}
         </SearchResultListArea>
       </SearchResultListAreaStyle>
       {selectedMovie && (

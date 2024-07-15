@@ -72,26 +72,12 @@ const GenreList = styled.ul`
 `;
 
 const GenreItem = styled.li`
-  background-color: #333;
+  background-color: red;
   color: white;
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 12px;
-  
-  /* 3D 효과 적용 */
-  /* box-shadow: 0 0 0 1px #000000 inset,
-              0 0 0 2px rgba(255,255,255,0.15) inset,
-              0 8px 0 0 rgba(0, 0, 0, .7),
-              0 8px 0 1px rgba(255,0,0,.4),
-              0 8px 8px 1px rgba(0,0,0,0.5);
-  transition: all 0.1s ease;
-  
-  &:active {
-    box-shadow: 0 0 0 1px #000000 inset,
-                0 0 0 2px rgba(255,255,255,0.15) inset,
-                0 0 0 1px rgba(255,0,0,0.4);
-    transform: translateY(8px);
-  } */
+  font-weight: bolder;
 `;
 
 const MovieDescriptionContainer = styled.div`
@@ -148,35 +134,25 @@ const CastImage = styled.img`
 `;
 
 const KeywordList = styled.div`
-display: flex;
-flex-wrap: wrap;
-gap: 5px;
-margin-top: 10px;
-color: white;
-cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  align-items: center;
+  margin-bottom: 10px;
 `;
 
 const KeywordItem = styled.span`
-background-color: #333;
-color: white;
-padding: 5px 10px;
-border-radius: 15px;
-font-size: 12px;
+  background-color: transparent;
+  color: white;
+  padding: 0;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bolder;
 
-
-/* box-shadow: 0 0 0 1px #000000 inset,
-              0 0 0 2px rgba(255,255,255,0.15) inset,
-              0 8px 0 0 rgba(0, 0, 0, .7),
-              0 8px 0 1px rgba(255,0,0,.4),
-              0 8px 8px 1px rgba(0,0,0,0.5);
-  transition: all 0.1s ease;
-  
-  &:active {
-    box-shadow: 0 0 0 1px #000000 inset,
-                0 0 0 2px rgba(255,255,255,0.15) inset,
-                0 0 0 1px rgba(255,0,0,0.4);
-    transform: translateY(8px);
-  } */
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
@@ -192,7 +168,6 @@ const ContentSection = ({
   setShowTrailer, 
   keywords,
   setKeywords,
-  onGenreClick,
   onKeywordClick 
 
 }) => {
@@ -255,6 +230,19 @@ const ContentSection = ({
         </MovieDetailsColumn>
       </MovieDetailsContainer>
 
+      <KeywordList>
+        키워드:
+        {keywords.slice(0, 10).map((keyword, index, array) => (
+          <KeywordItem 
+            key={keyword.id} 
+            onClick={() => handleKeywordClick(keyword.name)}
+          >
+            {keyword.name}
+            {index < array.length - 1 ? ',' : ''}
+          </KeywordItem>
+        ))}
+      </KeywordList>
+
       <GenreList>장르 :
         {genres && genres.map(genre => (
           <GenreItem 
@@ -265,17 +253,6 @@ const ContentSection = ({
           </GenreItem>
         ))}
       </GenreList>
-
-      <KeywordList>키워드:
-        {keywords.slice(0, 10).map(keyword => (
-          <KeywordItem 
-            key={keyword.id} 
-            onClick={() => handleKeywordClick(keyword.name)}
-          >
-            {keyword.name}
-          </KeywordItem>
-        ))}
-      </KeywordList>
 
       <MovieDescriptionContainer>
         <MovieDescriptionContent>
@@ -307,11 +284,6 @@ const ContentSection = ({
             </CastItem>
         ))}
       </CastList>
-
-
-
-
-
 
     </Wrapper>
   );
