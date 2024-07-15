@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import api from "./api";
+import api, { setAuthToken } from "./api";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import "./Modify.css";
@@ -20,24 +20,19 @@ export function Modify() {
     if (!cookies.accessToken) {
       alert("권한이 없습니다.");
       navigate("/login");
+    } else {
+      setAuthToken(cookies.accessToken);
+      api.get("/api/auth/modify")
+      .then(response => {
+        const { mid, mnick, memail, mphone } = response.data;
+        setMemberData({ mid, mnick, memail, mphone, mpw: "" });
+      })
+      .catch(error => {
+        console.error(error);
+        alert("유저 정보를 불러오는 데 실패했습니다.");
+      });
     }
   }, [cookies, navigate]);
-
-  useEffect(() => {
-    const storedMemberData = sessionStorage.getItem("memberData");
-    if (storedMemberData) {
-      setMemberData(JSON.parse(storedMemberData));
-    } else {
-      api.get("/api/auth/modify")
-        .then(response => {
-          const { mid, mnick, memail, mphone } = response.data;
-          const data = { mid, mnick, memail, mphone, mpw: "" };
-          setMemberData(data);
-          sessionStorage.setItem("memberData", JSON.stringify(data));
-        })
-        .catch(error => console.error(error));
-    }
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +61,6 @@ export function Modify() {
     try {
       const response = await api.put("/api/auth/modify", dataToSend);
       alert(response.data);
-      sessionStorage.removeItem("memberData");
       navigate("/mypage");
     } catch (error) {
       if (error.response) {
@@ -100,32 +94,34 @@ export function Modify() {
   );
 }
 
-
 export function ModifyCheck() {
-  //비밀번호를 저장할 변수 
   const [mpw, setMpw] = useState("");
-
   const navigate = useNavigate();
-  
-  //쿠키값 가져오는 훅.
   const [cookies] = useCookies(['accessToken']);
 
   useEffect(() => {
-    //토큰이 없으면 접근불가.
     if (!cookies.accessToken) {
       alert("권한이 없습니다.");
       navigate("/login");
+    } else {
+      setAuthToken(cookies.accessToken);
     }
   }, [cookies, navigate]);
 
-  //비밀번호가 맞으면 정보 수정 페이지 이동.
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    api.post("/api/auth/checkPwModify", { mpw })
-      .then(response => {
+
+    try {
+      const response = await api.post("/api/auth/checkPwModify", { mpw });
+      if (response.status === 200) {
         navigate("/modify");
-      })
-      .catch(error => console.error(error));
+      } else {
+        alert("비밀번호가 맞지 않습니다.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("비밀번호 확인 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -140,3 +136,4 @@ export function ModifyCheck() {
     </div>
   );
 }
+
