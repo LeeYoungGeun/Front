@@ -15,7 +15,7 @@ export function Modify() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedMemberData = sessionStorage.getItem("memberData");
+    const storedMemberData = sessionStorage.getItem("memberData");  //서버에 데이터 불러온 세션 저장.
     if (storedMemberData) {
       setMemberData(JSON.parse(storedMemberData));
     } else {
@@ -38,12 +38,12 @@ export function Modify() {
     e.preventDefault();
     const dataToSend = { ...memberData };
     if (!dataToSend.mpw) {
-      delete dataToSend.mpw; // 비밀번호가 비어 있으면 삭제
+      delete dataToSend.mpw; // 수정페이지 비밀번호가 비어있으면 기존 비밀번호 유지.
     }
     api.put("/api/auth/modify", dataToSend)
       .then(response => {
         alert(response.data);
-        sessionStorage.removeItem("memberData");
+        sessionStorage.removeItem("memberData");  //수정이 완료되면 세션에 저장한 데이터 제거.
         navigate("/mypage");  // 수정 후 mypage로 이동
       })
       .catch(error => console.error(error));
@@ -77,9 +77,8 @@ export function ModifyCheck() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.post("/api/auth/checkPw", { mpw }, { params: { removeCheck: false } })
+    api.post("/api/auth/checkPwModify", { mpw })
       .then(response => {
-        alert(response.data);
         navigate("/modify");
       })
       .catch(error => console.error(error));

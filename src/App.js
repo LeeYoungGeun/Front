@@ -10,7 +10,7 @@ import Login from './Member/Login';
 import SignUp from './Member/SignUp';
 import Mypage from './Member/Mypage';
 import { Modify, ModifyCheck} from './Member/Modify'; 
-import CheckPw from './Member/CheckPw';
+import Remove from './Member/Remove';
 import { useCookies } from 'react-cookie';
 import { setAuthToken } from './Member/api';
 
@@ -34,7 +34,7 @@ function App() {
         <Route path='/modify' element={<Modify />} />
         <Route path='/modifycheck' element={<ModifyCheck />} />
         <Route path='/mypage' element={<Mypage />} />
-        <Route path='/checkpw' element={<CheckPw />} />
+        <Route path='/checkpw' element={<Remove />} />
       </Routes>
       <Footer/>
     </MainContainer>

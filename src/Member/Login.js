@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import api, { setAuthToken } from './api';
-import './Login.css'; // CSS 파일을 포함합니다.
+import './Login.css';
 
 function Login() {
   const [loginData, setLoginData] = useState({
