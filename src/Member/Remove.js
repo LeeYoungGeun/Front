@@ -11,7 +11,7 @@ function CheckPw() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    api.post("/api/auth/checkPwRemove", { mpw })
+    api.post("/api/auth/remove", { mpw })
       .then(response => {
         alert(response.data);
         removeCookie('accessToken');
