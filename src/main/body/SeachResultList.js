@@ -129,6 +129,7 @@ function SearchResultList({ clearSearchValue }) {
   const genreId = searchParams.get('genre');
   const genreName = location.state?.genreName;
   const [results, setResults] = useState([]);
+  const keyword = searchParams.get('keyword');
 
   
   useEffect(() => {
@@ -175,6 +176,41 @@ function SearchResultList({ clearSearchValue }) {
     clearSearchValue();
     navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
   };
+
+  useEffect(() => {
+    if (keyword) {
+      const keywordSearchOptions = {
+        method: 'GET',
+        url: 'https://api.themoviedb.org/3/search/keyword',
+        params: { query: keyword },
+        headers: {
+          accept: 'application/json',
+          Authorization: accessToken
+        }
+      };
+  
+      axios.request(keywordSearchOptions)
+        .then(response => {
+          const keywordId = response.data.results[0]?.id;
+          if (keywordId) {
+            return axios.get('https://api.themoviedb.org/3/discover/movie', {
+              params: { with_keywords: keywordId },
+              headers: {
+                Authorization: accessToken
+              }
+            });
+          }
+        })
+        .then(response => {
+          if (response) {
+            setResults(response.data.results);
+          }
+        })
+        .catch(error => {
+          console.error("Error searching by keyword:", error);
+        });
+    }
+  }, [keyword]);
 
   return (
     <MainBody>

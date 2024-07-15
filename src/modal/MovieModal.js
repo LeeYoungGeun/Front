@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect } from 'react';
 import styled, { css } from "styled-components";
 import { FaTimes } from 'react-icons/fa';
 import YoutubeIframe from './YoutubeModal';
@@ -8,6 +7,10 @@ import useTrailer from './useTrailer';
 import ReviewSection from './ReveiwSection';
 import ContentSection from './ContentSection';
 import TitleSection from './TitleSection';
+import { Navigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -96,11 +99,17 @@ const MovieModal = ({ movie, onClose, onGenreClick }) => {
   const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
   const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews();
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
+  const [keywords, setKeywords] = useState([]);
+  const navigate = useNavigate();
 
   const handleClose = useCallback(() => {
     onClose();
   }, [onClose]);
   
+  const handleKeywordSearch = useCallback((keyword) => {
+    navigate(`/search?keyword=${keyword}`);
+  }, [navigate]);
+
   useEffect(() => {
     // 모달이 열릴 때 body의 스크롤을 막습니다.
     document.body.style.overflow = 'hidden';
@@ -119,6 +128,23 @@ const MovieModal = ({ movie, onClose, onGenreClick }) => {
       window.removeEventListener('keydown', handleEsc);
     };
   }, [handleClose]);
+
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}/keywords`, {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE`,
+          },
+        });
+        setKeywords(response.data.keywords);
+      } catch (error) {
+        console.error("Error fetching keywords:", error);
+      }
+    };
+  
+    fetchKeywords();
+  }, [movie.id]);
 
   if (!movie) return null;
 
@@ -147,7 +173,10 @@ const MovieModal = ({ movie, onClose, onGenreClick }) => {
                 productionCompanies={productionCompanies}
                 trailerId={trailerId}
                 setShowTrailer={setShowTrailer}
+                onKeywordClick={handleKeywordSearch}
                 onGenreClick={onGenreClick}
+                keywords={keywords}
+                setKeywords={setKeywords}
               />
 
               <ReviewSection 

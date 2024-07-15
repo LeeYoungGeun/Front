@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { FaPlay, FaStar } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -71,14 +72,14 @@ const GenreList = styled.ul`
 `;
 
 const GenreItem = styled.li`
-  background-color: black;
-  color: red;
+  background-color: #333;
+  color: white;
   padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 15px;
+  font-size: 12px;
   
   /* 3D 효과 적용 */
-  box-shadow: 0 0 0 1px #000000 inset,
+  /* box-shadow: 0 0 0 1px #000000 inset,
               0 0 0 2px rgba(255,255,255,0.15) inset,
               0 8px 0 0 rgba(0, 0, 0, .7),
               0 8px 0 1px rgba(255,0,0,.4),
@@ -90,7 +91,7 @@ const GenreItem = styled.li`
                 0 0 0 2px rgba(255,255,255,0.15) inset,
                 0 0 0 1px rgba(255,0,0,0.4);
     transform: translateY(8px);
-  }
+  } */
 `;
 
 const MovieDescriptionContainer = styled.div`
@@ -146,6 +147,40 @@ const CastImage = styled.img`
   margin-top: 10px;
 `;
 
+const KeywordList = styled.div`
+display: flex;
+flex-wrap: wrap;
+gap: 5px;
+margin-top: 10px;
+color: white;
+cursor: pointer;
+`;
+
+const KeywordItem = styled.span`
+background-color: #333;
+color: white;
+padding: 5px 10px;
+border-radius: 15px;
+font-size: 12px;
+
+
+/* box-shadow: 0 0 0 1px #000000 inset,
+              0 0 0 2px rgba(255,255,255,0.15) inset,
+              0 8px 0 0 rgba(0, 0, 0, .7),
+              0 8px 0 1px rgba(255,0,0,.4),
+              0 8px 8px 1px rgba(0,0,0,0.5);
+  transition: all 0.1s ease;
+  
+  &:active {
+    box-shadow: 0 0 0 1px #000000 inset,
+                0 0 0 2px rgba(255,255,255,0.15) inset,
+                0 0 0 1px rgba(255,0,0,0.4);
+    transform: translateY(8px);
+  } */
+`;
+
+const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
+
 const ContentSection = ({ 
   movie, 
   director, 
@@ -155,7 +190,11 @@ const ContentSection = ({
   productionCompanies, 
   trailerId, 
   setShowTrailer, 
-  onGenreClick
+  keywords,
+  setKeywords,
+  onGenreClick,
+  onKeywordClick 
+
 }) => {
   const [showFullOverview, setShowFullOverview] = useState(false);
   const navigate = useNavigate();
@@ -168,6 +207,28 @@ const ContentSection = ({
   const handleGenreClick = (genreId, genreName) => {
     navigate(`/search?genre=${genreId}`, { state: { genreName } });
   };
+
+  const handleKeywordClick = (keyword) => {
+    onKeywordClick(keyword);
+  };
+
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}/keywords`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        setKeywords(response.data.keywords);
+      } catch (error) {
+        console.error("Error fetching keywords:", error);
+      }
+    };
+  
+    fetchKeywords();
+  }, [movie.id]);
+
 
   return (
     <Wrapper>
@@ -194,7 +255,7 @@ const ContentSection = ({
         </MovieDetailsColumn>
       </MovieDetailsContainer>
 
-      <GenreList>
+      <GenreList>장르 :
         {genres && genres.map(genre => (
           <GenreItem 
             key={genre.id} 
@@ -204,6 +265,17 @@ const ContentSection = ({
           </GenreItem>
         ))}
       </GenreList>
+
+      <KeywordList>키워드:
+        {keywords.slice(0, 10).map(keyword => (
+          <KeywordItem 
+            key={keyword.id} 
+            onClick={() => handleKeywordClick(keyword.name)}
+          >
+            {keyword.name}
+          </KeywordItem>
+        ))}
+      </KeywordList>
 
       <MovieDescriptionContainer>
         <MovieDescriptionContent>
@@ -235,6 +307,12 @@ const ContentSection = ({
             </CastItem>
         ))}
       </CastList>
+
+
+
+
+
+
     </Wrapper>
   );
 };
