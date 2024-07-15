@@ -77,10 +77,23 @@ const Button = styled.button`
   max-width: 100%;
 `;
 
-function Header() {
+function Header({ searchValue, setSearchValue, clearSearchValue }) {
   const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+
+  const handleLogoClick = () => {
+    clearSearchValue();
+    navigate('/');
+  };
+
+  const handleLogout = () => {
+    removeCookie('accessToken', { path: '/' });
+    removeCookie('refreshToken', { path: '/' });
+    setIsAuthenticated(false);
+    navigate('/');
+    alert("로그아웃 되었습니다.");
+  };
 
   useEffect(() => {
     console.log("쿠키 확인:", cookies.accessToken); // 쿠키 값을 확인하기 위해 콘솔에 출력
@@ -91,22 +104,21 @@ function Header() {
     }
   }, [cookies.accessToken]);
 
-  const handleLogout = () => {
-    removeCookie('accessToken', { path: '/' });
-    removeCookie('refreshToken', { path: '/' });
-    setIsAuthenticated(false);
-    navigate('/');
-    alert("로그아웃 되었습니다.");
-  };
+
 
   return (
     <MainHeader>
       <MainHeaderLogoArea>
-        <Link to="/">TFT</Link>
+        <div onClick={handleLogoClick}>TFT</div>
       </MainHeaderLogoArea>
+
       <MainHeaderSearchArea>
-        <SearchBar />
+        <SearchInputComponent 
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          clearSearchValue={clearSearchValue} />
       </MainHeaderSearchArea>
+
       <MainHeaderButtonArea>
         {isAuthenticated ? (
           <>

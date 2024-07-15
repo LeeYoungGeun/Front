@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { MainContainer } from './main/Main';
 import Header from './main/header/Header';
@@ -11,9 +11,15 @@ import SignUp from './Member/SignUp';
 
 function App() {
 
+  const [searchValue, setSearchValue] = useState('');
+
+  const clearSearchValue = () => {
+    setSearchValue('');
+  };
+
   return (
     <MainContainer color='black'>
-      <Header/>
+      <Header searchValue={searchValue} setSearchValue={setSearchValue} clearSearchValue={clearSearchValue} />
       <Routes>
         <Route path='/' element={<Body />} /> 
         <Route path='/search' element={<SearchResultList />} /> 
