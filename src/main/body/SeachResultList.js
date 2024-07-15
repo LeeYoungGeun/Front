@@ -143,7 +143,7 @@ const SearchResultListImg = styled.img`
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
 
-function SearchResultList() {
+function SearchResultList({ clearSearchValue }) {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [searchParams] = useSearchParams();
   const location = useLocation();
@@ -153,6 +153,12 @@ function SearchResultList() {
   const genreName = location.state?.genreName;
 
   const [results, setResults] = useState([]);
+
+  const handleGenreClick = (newGenreId, newGenreName) => {
+    setSelectedMovie(null);
+    clearSearchValue();
+    navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
+  };
 
   useEffect(() => {
     // 새로운 검색결과 로드시 모달 닫기    
@@ -197,11 +203,6 @@ function SearchResultList() {
         });
     }
   }, [searchParam, genreId]);
-
-  const handleGenreClick = (newGenreId, newGenreName) => {
-    setSelectedMovie(null); // 모달 닫기
-    navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
-  };
 
   return (
     <MainBody>
