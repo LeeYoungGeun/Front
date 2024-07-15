@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { MainHeader } from "../Main";
 import SearchInputComponent from "../body/SearchInputComponent";
-
 const MainHeaderLogoArea = styled.div`
   width: 10%;
   display: flex;
@@ -15,14 +14,12 @@ const MainHeaderLogoArea = styled.div`
   font-weight: bold;
   cursor: pointer;
 `;
-
 const MainHeaderSearchArea = styled.div`
   width: 70%;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
-
 const SearchBar = () => {
   return (
     <SearchInputComponent 
@@ -31,14 +28,12 @@ const SearchBar = () => {
     />
   );
 };
-
 const MainHeaderButtonArea = styled.div`
   width: 20%;
   display: flex;
   margin-left: 50px;
   align-items: center;
 `;
-
 const Button = styled.button`
   background-color: rgba(255, 255, 255, 0.15);
   color: white;
@@ -55,21 +50,17 @@ const Button = styled.button`
     color: red;
     border-color: white;
   }
-
   &:focus {
     outline: none;
   }
-
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 6px 10px;
   }
-
   @media (max-width: 480px) {
     font-size: 12px;
     padding: 4px 8px;
   }
-
   /* 버튼이 줄바꿈되지 않도록 설정 */
   white-space: nowrap;
   overflow: hidden;
@@ -86,15 +77,6 @@ function Header({ searchValue, setSearchValue, clearSearchValue }) {
     clearSearchValue();
     navigate('/');
   };
-  
-  useEffect(() => {
-    console.log("쿠키 확인:", cookies.accessToken); // 쿠키 값을 확인하기 위해 콘솔에 출력
-    if (cookies.accessToken) {
-      setIsAuthenticated(true);
-    } else {
-      setIsAuthenticated(false);
-    }
-  }, [cookies.accessToken]);
 
   const handleLogout = () => {
     removeCookie('accessToken', { path: '/' });
@@ -104,18 +86,30 @@ function Header({ searchValue, setSearchValue, clearSearchValue }) {
     alert("로그아웃 되었습니다.");
   };
 
+  useEffect(() => {
+    console.log("쿠키 확인:", cookies.accessToken); // 쿠키 값을 확인하기 위해 콘솔에 출력
+    if (cookies.accessToken) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [cookies.accessToken]);
+
+
+
   return (
     <MainHeader>
       <MainHeaderLogoArea>
         <div onClick={handleLogoClick}>TFT</div>
       </MainHeaderLogoArea>
+
       <MainHeaderSearchArea>
         <SearchInputComponent 
           searchValue={searchValue}
           setSearchValue={setSearchValue}
-          clearSearchValue={clearSearchValue}
-        />
+          clearSearchValue={clearSearchValue} />
       </MainHeaderSearchArea>
+
       <MainHeaderButtonArea>
         {isAuthenticated ? (
           <>
@@ -134,5 +128,4 @@ function Header({ searchValue, setSearchValue, clearSearchValue }) {
     </MainHeader>
   );
 }
-
 export default Header;

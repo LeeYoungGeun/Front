@@ -5,12 +5,10 @@
 // import { useSearchParams } from "react-router-dom";
 // import MovieModal from "../../modal/MovieModal";
 // //import MovieListImage1 from '../../img/movieImg.jpg';
-
 // const SearchResultListAreaStyle = styled.div`
 //   width: 100%;
 //   margin-top: 40px;
 // `;
-
 // const SectionTitle = styled.h1`
 //   margin-left: 3em;
 //   margin-bottom: 15px;
@@ -18,38 +16,29 @@
 //   display: flex;
 //   align-items: center;
 // `;
-
 // const SearchResultListArea = styled.ul`
 //   display: grid;
 //   grid-template-columns: repeat(8, 1fr); /* Adjust columns as needed */
 //   margin-left: 3em;
 // `;
-
 // const SearchResultListImgLi = styled.li`
 //   text-align: center;
 //   margin: 5px;
 // `;
-
 // const SearchResultListImg = styled.img`
 //   height: 250px;
 //   cursor: pointer;
 // `;
-
 // //api base url 
 // const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 // const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
-
 // // test
 // // const searchParam = "마스크";
-
 //   function SearchResultList() {
-
 //         const [selectedMovie, setSelectedMovie] = useState(null);
-
 //         let [searchParamVal] = useSearchParams();
 //         let searchParam = searchParamVal.get('searchParam');
 //         console.log("searchParam : " + searchParam);
-
 //         const searchOptions = {
 //             method: 'GET',
 //             url: 'https://api.themoviedb.org/3/search/movie',
@@ -59,9 +48,7 @@
 //               Authorization: accessToken
 //             }
 //           };
-
 //         let [results, setResults] = useState();
-
 //         useEffect(() => {
 //             //영화 검색 
 //             axios 
@@ -77,9 +64,7 @@
 //             console.log(error);
 //         });
 //       },[results])
-
 //       console.log("results : " + results);
-
 //       return (
 //         <MainBody>
 //             <SearchResultListAreaStyle>
@@ -102,20 +87,16 @@
 //     }
     
 //     export default SearchResultList;
-
-
 import styled from "styled-components";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { MainBody } from '../Main';
 import { useSearchParams, useLocation, useNavigate } from "react-router-dom";
 import MovieModal from "../../modal/MovieModal";
-
 const SearchResultListAreaStyle = styled.div`
   width: 100%;
   margin-top: 40px;
 `;
-
 const SectionTitle = styled.h1`
   margin-left: 3em;
   margin-bottom: 15px;
@@ -123,23 +104,19 @@ const SectionTitle = styled.h1`
   display: flex;
   align-items: center;
 `;
-
 const SearchResultListArea = styled.ul`
   display: grid;
   grid-template-columns: repeat(8, 1fr); /* Adjust columns as needed */
   margin-left: 3em;
 `;
-
 const SearchResultListImgLi = styled.li`
   text-align: center;
   margin: 5px;
 `;
-
 const SearchResultListImg = styled.img`
   height: 250px;
   cursor: pointer;
 `;
-
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
 
@@ -151,19 +128,11 @@ function SearchResultList({ clearSearchValue }) {
   const searchParam = searchParams.get('searchParam');
   const genreId = searchParams.get('genre');
   const genreName = location.state?.genreName;
-
   const [results, setResults] = useState([]);
 
-  const handleGenreClick = (newGenreId, newGenreName) => {
-    setSelectedMovie(null);
-    clearSearchValue();
-    navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
-  };
-
+  
   useEffect(() => {
-    // 새로운 검색결과 로드시 모달 닫기    
     setSelectedMovie(null);
-
     if (searchParam) {
       const searchOptions = {
         method: 'GET',
@@ -174,7 +143,6 @@ function SearchResultList({ clearSearchValue }) {
           Authorization: accessToken
         }
       };
-
       axios.request(searchOptions)
         .then(function (response) {
           setResults(response.data.results);
@@ -182,7 +150,6 @@ function SearchResultList({ clearSearchValue }) {
         .catch(function (error) {
           console.log(error);
         });
-
     } else if (genreId) {
       const genreSearchOptions = {
         method: 'GET',
@@ -193,7 +160,6 @@ function SearchResultList({ clearSearchValue }) {
           Authorization: accessToken
         }
       };
-
       axios.request(genreSearchOptions)
         .then(function (response) {
           setResults(response.data.results);
@@ -204,11 +170,17 @@ function SearchResultList({ clearSearchValue }) {
     }
   }, [searchParam, genreId]);
 
+  const handleGenreClick = (newGenreId, newGenreName) => {
+    setSelectedMovie(null);
+    clearSearchValue();
+    navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
+  };
+
   return (
     <MainBody>
       <SearchResultListAreaStyle>
         <SectionTitle>
-          {searchParam ? `# 검색 결과: ${searchParam}` : `# ${genreName} 장르 영화`}
+          {searchParam ? `# 검색 결과: ${searchParam}` : `# ${genreName} 장르`}
         </SectionTitle>
         <SearchResultListArea>
           {Array.isArray(results) && results.length > 0
@@ -223,7 +195,6 @@ function SearchResultList({ clearSearchValue }) {
             : <h2 style={{ 'fontSize': '1.5em' }}>결과없음</h2>}
         </SearchResultListArea>
       </SearchResultListAreaStyle>
-
       {selectedMovie && (
         <MovieModal 
         movie={selectedMovie} 
@@ -231,9 +202,7 @@ function SearchResultList({ clearSearchValue }) {
         onGenreClick={handleGenreClick} 
         />
       )}
-
     </MainBody>
   );
 }
-
 export default SearchResultList;

@@ -16,7 +16,7 @@ function App() {
   const clearSearchValue = () => {
     setSearchValue('');
   };
-  
+
   return (
     <MainContainer color='black'>
       <Header searchValue={searchValue} setSearchValue={setSearchValue} clearSearchValue={clearSearchValue} />
@@ -30,5 +30,4 @@ function App() {
     </MainContainer>
   );
 }
-
 export default App;
