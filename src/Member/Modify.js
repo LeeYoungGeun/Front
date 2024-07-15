@@ -118,15 +118,13 @@ export function ModifyCheck() {
     e.preventDefault();
 
     try {
-      const response = await api.post("/api/auth/checkPwModify", { mpw });
+      const response = await api.post("/api/auth/checkPw", { mpw });
       if (response.status === 200) {
         navigate("/modify");
-      } else {
-        alert("비밀번호가 맞지 않습니다.");
-      }
+      } 
     } catch (error) {
       console.error(error);
-      alert("비밀번호 확인 중 오류가 발생했습니다.");
+      alert("비밀번호가 일치하지 않습니다.");
     }
   };
 
