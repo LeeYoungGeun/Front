@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {Cookies} from 'react-cookie';
 
 const cookies = new Cookies();
@@ -8,12 +8,37 @@ export const getCookie = () => {
   return cookies.get("accessToken");
  }
 
+const headers_val = {
+  'Content-Type': 'application/json', 
+  'Authorization': `Bearer ${getCookie()}`
+}
+
 const useReviews = (movie_id,movie_title) => {
   //별점
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
   
+  let option_review_list = {
+    method: 'post',
+    url: 'http://localhost:8090/api/review/listOfReview',
+    headers: headers_val,
+    // movie_id, user_id , review_text, review_star
+    data : JSON.stringify({
+      "movie_id": movie_id
+    })
+  };
+
+  useEffect(() => {
+    axios.request(option_review_list)
+    .then((response) => {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  },[]);
+
   const handleSubmitReview = () => {    
     
     if (review.trim() !== '') {
@@ -21,11 +46,6 @@ const useReviews = (movie_id,movie_title) => {
       setReview('');
       setRating(0);
       
-      const headers_val = {
-          'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${getCookie()}`
-      }
-
       let option_movie_register = {
         method: 'post',
         url: 'http://localhost:8090/api/movie/register',
@@ -47,20 +67,6 @@ const useReviews = (movie_id,movie_title) => {
           "review_star": rating
         })
       };
-
-      let option_review_list = {
-        method: 'post',
-        url: 'http://localhost:8090/api/review/listOfReveiw',
-        headers: headers_val,
-        // movie_id, user_id , review_text, review_star
-        data : JSON.stringify({
-          "movie_id": movie_id
-        })
-      };
-
-      // useEffect(() => {
-
-      // })
 
       axios.request(option_movie_register)
       .then((response) => {
