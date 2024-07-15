@@ -13,6 +13,11 @@ export function Modify() {
     mpw: ""
   });
 
+  const [originalData, setOriginalData] = useState({
+    mnick: "",
+    memail: ""
+  });
+
   const [cookies] = useCookies(['accessToken']);
   const navigate = useNavigate();
 
@@ -26,6 +31,7 @@ export function Modify() {
       .then(response => {
         const { mid, mnick, memail, mphone } = response.data;
         setMemberData({ mid, mnick, memail, mphone, mpw: "" });
+        setOriginalData({ mnick, memail });
       })
       .catch(error => {
         console.error(error);
@@ -59,7 +65,7 @@ export function Modify() {
     }
 
     try {
-      const response = await api.put("/api/auth/modify", dataToSend);
+      const response = await api.put("/api/auth/modify", { ...dataToSend, originalMnick: originalData.mnick, originalMemail: originalData.memail });
       alert(response.data);
       navigate("/mypage");
     } catch (error) {
