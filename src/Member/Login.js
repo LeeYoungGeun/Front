@@ -9,11 +9,13 @@ function Login() {
     mid: '',
     mpw: ''
   });
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
+
+  
+  const [cookies, setCookie] = useCookies(['accessToken', 'refreshToken']);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = cookies.accessToken || localStorage.getItem('accessToken');
+    const accessToken = cookies.accessToken;
     if (accessToken) {
       setAuthToken(accessToken);
     }

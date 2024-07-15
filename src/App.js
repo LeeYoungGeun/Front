@@ -18,7 +18,7 @@ function App() {
   const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
 
   useEffect(() => {
-    const accessToken = cookies.accessToken || localStorage.getItem('accessToken');
+    const accessToken = cookies.accessToken;
     if (accessToken) {
       setAuthToken(accessToken);
     }
