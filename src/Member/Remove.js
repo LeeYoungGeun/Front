@@ -20,7 +20,7 @@ function CheckPw() {
       })
       .catch(error => {
         console.error(error);
-        alert("계정 삭제 실패. 비밀번호를 확인해주세요.");
+        alert("비밀번호를 확인해주세요.");
       });
   };
 
