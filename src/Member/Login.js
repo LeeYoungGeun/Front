@@ -63,7 +63,7 @@ function Login() {
           <div className="kakao" onClick={handleKakaoLogin}>
             <img src="img/kakao_login.png" alt="카카오 로그인" />
           </div>
-          <Link to="/SignUp"><p>회원가입</p></Link>
+          <Link to="/SignUp"><p className='signUpBtn'>회원가입</p></Link>
         </form>
       </div>
     </div>
