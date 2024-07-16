@@ -73,4 +73,9 @@ input:focus {
     cursor: pointer;
   }
 
+  .signUpBtn {
+    width: 100%;
+    margin-left: 300px;
+    margin-top: 10px;
+  }
 
