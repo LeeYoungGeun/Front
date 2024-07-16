@@ -44,7 +44,7 @@ function SearchInputComponent({ searchValue, setSearchValue, clearSearchValue })
     if (searchValue !== '') {
       navigate(`/search?searchParam=${searchValue}`);
     } else {
-      alert("검색어를 입력하세요.");
+      alert("타이틀을 입력해 주세요.");
     }
   };
 
@@ -55,7 +55,7 @@ function SearchInputComponent({ searchValue, setSearchValue, clearSearchValue })
         value={searchValue}
         onChange={handleChange}
         onKeyPress={handleKeyPress}
-        placeholder="검색어를 입력해 주세요."
+        placeholder="타이틀을 입력해 주세요."
       />
       <SearchIcon onClick={handleSearchClick} />
     </>

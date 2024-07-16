@@ -95,6 +95,13 @@ const MovieInfo = styled.div`
   max-height: 100%;
 `;
 
+const NoPosterImage = styled.img`
+  width: auto;
+  height: auto;
+  margin-right: 20px;
+  border-radius: 20px;
+`
+
 const MovieModal = ({ movie, onClose, onGenreClick }) => {
   const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
   const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews();
@@ -158,7 +165,10 @@ const MovieModal = ({ movie, onClose, onGenreClick }) => {
           <p>{error}</p>
         ) : (
           <>
-            <PosterImage src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+            {movie.poster_path ? (
+              <PosterImage src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+            ) : ( <NoPosterImage src='img/NoPosterImage.jpg' alt="NoPosterImage" />
+            )}
 
             <MovieInfo>
 

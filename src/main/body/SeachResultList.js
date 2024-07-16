@@ -127,19 +127,9 @@ const SearchResultListImg = styled.img`
   cursor: pointer;
 `;
 
-const NoPosterAvailable = styled.div`
+const NoPosterImage = styled.img`
   height: 250px;
   width: 167px;
-  background-color: white;
-  color: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-  border: 1px solid #ddd;
   cursor: pointer;
 `;
 
@@ -260,11 +250,7 @@ function SearchResultList({ clearSearchValue }) {
                     alt={movie.title || `Search Results Movie ${index + 1}`}
                   />
                 ) : (
-                  <NoPosterAvailable>
-                    <div>No</div>
-                    <div>Poster</div>
-                    <div>Available</div>
-                  </NoPosterAvailable>
+                  <NoPosterImage src='img/NoPosterImage.jpg' alt="NoPosterImage" />
                 )}
               </SearchResultListImgLi>
             ))

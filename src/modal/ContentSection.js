@@ -230,19 +230,6 @@ const ContentSection = ({
         </MovieDetailsColumn>
       </MovieDetailsContainer>
 
-      <KeywordList>
-        키워드:
-        {keywords.slice(0, 10).map((keyword, index, array) => (
-          <KeywordItem 
-            key={keyword.id} 
-            onClick={() => handleKeywordClick(keyword.name)}
-          >
-            {keyword.name}
-            {index < array.length - 1 ? ',' : ''}
-          </KeywordItem>
-        ))}
-      </KeywordList>
-
       <GenreList>장르 :
         {genres && genres.map(genre => (
           <GenreItem 
@@ -277,7 +264,7 @@ const ContentSection = ({
             <CastImage 
                 src={actor.profile_path 
                 ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
-                : 'path_to_default_image.jpg'} 
+                : '../../img/NoActorImage.png'} 
                 alt={actor.name} 
             />
             <p>{actor.name}</p>
@@ -285,6 +272,19 @@ const ContentSection = ({
         ))}
       </CastList>
 
+      <KeywordList>
+        키워드:
+        {keywords.slice(0, 10).map((keyword, index, array) => (
+          <KeywordItem 
+            key={keyword.id} 
+            onClick={() => handleKeywordClick(keyword.name)}
+          >
+            {keyword.name}
+            {index < array.length - 1 ? ',' : ''}
+          </KeywordItem>
+        ))}
+      </KeywordList>
+      
     </Wrapper>
   );
 };
