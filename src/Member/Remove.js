@@ -10,6 +10,7 @@ function Remove() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // 토큰이 없을 시 접근 불가.
     if (!cookies.accessToken) {
       alert("권한이 없습니다.");
       navigate("/login");
@@ -21,8 +22,8 @@ function Remove() {
     api.post("/api/auth/remove", { mpw })
       .then(response => {
         alert(response.data);
-        removeCookie('accessToken');
-        removeCookie('refreshToken');
+        removeCookie('accessToken');  //삭제시 엑세스토큰 삭제
+        removeCookie('refreshToken'); // 삭제시 리프레쉬토큰 삭제
         navigate("/");  // 삭제 후 메인 페이지로 이동
       })
       .catch(error => {
