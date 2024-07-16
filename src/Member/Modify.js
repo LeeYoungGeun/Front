@@ -13,6 +13,11 @@ export function Modify() {
     mpw: ""
   });
 
+  const [originalData, setOriginalData] = useState({
+    mnick: "",
+    memail: ""
+  });
+
   const [cookies] = useCookies(['accessToken']);
   const navigate = useNavigate();
 
@@ -26,6 +31,7 @@ export function Modify() {
       .then(response => {
         const { mid, mnick, memail, mphone } = response.data;
         setMemberData({ mid, mnick, memail, mphone, mpw: "" });
+        setOriginalData({ mnick, memail });
       })
       .catch(error => {
         console.error(error);
@@ -59,7 +65,7 @@ export function Modify() {
     }
 
     try {
-      const response = await api.put("/api/auth/modify", dataToSend);
+      const response = await api.put("/api/auth/modify", { ...dataToSend, originalMnick: originalData.mnick, originalMemail: originalData.memail });
       alert(response.data);
       navigate("/mypage");
     } catch (error) {
@@ -112,15 +118,13 @@ export function ModifyCheck() {
     e.preventDefault();
 
     try {
-      const response = await api.post("/api/auth/checkPwModify", { mpw });
+      const response = await api.post("/api/auth/checkPw", { mpw });
       if (response.status === 200) {
         navigate("/modify");
-      } else {
-        alert("비밀번호가 맞지 않습니다.");
-      }
+      } 
     } catch (error) {
       console.error(error);
-      alert("비밀번호 확인 중 오류가 발생했습니다.");
+      alert("비밀번호가 일치하지 않습니다.");
     }
   };
 

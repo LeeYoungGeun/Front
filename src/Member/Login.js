@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import api, { setAuthToken } from './api';
 import './Login.css';
@@ -10,12 +10,11 @@ function Login() {
     mpw: ''
   });
 
-  
   const [cookies, setCookie] = useCookies(['accessToken', 'refreshToken']);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = cookies.accessToken;
+    const accessToken = cookies.accessToken || localStorage.getItem('accessToken');
     if (accessToken) {
       setAuthToken(accessToken);
     }
@@ -37,7 +36,6 @@ function Login() {
       setCookie('accessToken', accessToken, { path: '/', sameSite: 'Lax' });
       setCookie('refreshToken', refreshToken, { path: '/', sameSite: 'Lax' });
 
-
       // axios 기본 헤더에 토큰 설정
       setAuthToken(accessToken);
 
@@ -49,6 +47,11 @@ function Login() {
     }
   };
 
+  const handleKakaoLogin = () => {
+    // 카카오 로그인 페이지로 리디렉션
+    window.location.href = "http://localhost:8090/oauth2/authorization/kakao";
+  };
+
   return (
     <div className="loginBackground">
       <div className="login-container">
@@ -57,9 +60,10 @@ function Login() {
           <input name="mid" value={loginData.mid} onChange={handleLoginChange} placeholder="아이디" />
           <input name="mpw" type="password" value={loginData.mpw} onChange={handleLoginChange} placeholder="비밀번호" />
           <button type="submit">로그인</button>
-          <div className="kakao">
+          <div className="kakao" onClick={handleKakaoLogin}>
             <img src="img/kakao_login.png" alt="카카오 로그인" />
           </div>
+          <Link to="/SignUp"><p>회원가입</p></Link>
         </form>
       </div>
     </div>
