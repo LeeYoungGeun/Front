@@ -13,12 +13,16 @@ import { Modify, ModifyCheck} from './Member/Modify';
 import Remove from './Member/Remove';
 import { useCookies } from 'react-cookie';
 import { setAuthToken } from './Member/api';
+import NotFound from './error/NotFound';
 
 function App() {
-  const [cookies, setCookie, removeCookie] = useCookies(['accessToken']);
+  const [cookies, setCookie] = useCookies(['accessToken']);
 
   useEffect(() => {
+    //토큰값 가져옴.
     const accessToken = cookies.accessToken;
+
+    //토큰값이 있는 지 확인. -> api.js에서 처리.
     if (accessToken) {
       setAuthToken(accessToken);
     }
@@ -35,6 +39,7 @@ function App() {
         <Route path='/modifycheck' element={<ModifyCheck />} />
         <Route path='/mypage' element={<Mypage />} />
         <Route path='/checkpw' element={<Remove />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
       <Footer/>
     </MainContainer>

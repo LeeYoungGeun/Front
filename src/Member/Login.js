@@ -14,7 +14,7 @@ function Login() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const accessToken = cookies.accessToken || localStorage.getItem('accessToken');
+    const accessToken = cookies.accessToken;
     if (accessToken) {
       setAuthToken(accessToken);
     }
