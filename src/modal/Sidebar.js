@@ -131,18 +131,20 @@ const Sidebar = ({ isOpen, onClose, clearSearchValue }) => {
   useEffect(() => {
     const fetchGenresAndKeywords = async () => {
       try {
-        const genresResponse = await api.get('/api/genre/movie/list', {
-          params: { language: 'en' }
+        const genresResponse = await api.get('/genre/movie/list', {
+          params: { language: 'en', api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
         });
         setGenres(genresResponse.data.genres);
 
-        const moviesResponse = await api.get('/api/movie/popular', {
-          params: { language: 'en' }
+        const moviesResponse = await api.get('/movie/popular', {
+          params: { language: 'en', api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
         });
 
         const movieIds = moviesResponse.data.results.slice(0, 5).map(movie => movie.id);
         const keywordsPromises = movieIds.map(id => 
-          api.get(`/api/movie/${id}/keywords`)
+          api.get(`/movie/${id}/keywords`, {
+            params: { api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
+          })
         );
 
         const keywordsResponses = await Promise.all(keywordsPromises);

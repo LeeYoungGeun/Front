@@ -104,7 +104,7 @@ const ErrorMessage = styled.div`
 const baseImageUrl = 'https://image.tmdb.org/t/p/original';
 const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
 
-function MainBodyRollingBanner({ clearSearchValue, onKeywordClick }) {
+function MainBodyRollingBanner({ clearSearchValue = () => {}, onKeywordClick = () => {} }) {
   const [popularMovies, setPopularMovies] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
