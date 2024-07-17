@@ -21,7 +21,7 @@ function Mypage() {
       <div className="main-container">
         <div className="main-form">
           <h1>마이페이지</h1>
-          <Link to="/modifycheck"><button className="modify">회원정보수정</button></Link>
+          <Link to="/modify"><button className="modify">회원정보수정</button></Link>
           <Link to="/checkpw"><button className="danger">계정탈퇴</button></Link>
         </div>
       </div>
