@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaHome, FaFilm, FaTags, FaTimes } from 'react-icons/fa';
-import api from '../Member/api';  // API 파일 경로를 적절히 수정하세요
+import axios from 'axios';
 
 const SidebarOverlay = styled.div`
   position: fixed;
@@ -127,23 +127,31 @@ const Sidebar = ({ isOpen, onClose, clearSearchValue }) => {
   const [keywords, setKeywords] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
+  const api = axios.create({
+    baseURL: 'https://api.themoviedb.org/3',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 
   useEffect(() => {
     const fetchGenresAndKeywords = async () => {
       try {
         const genresResponse = await api.get('/genre/movie/list', {
-          params: { language: 'en', api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
+          params: { language: 'en', api_key: API_KEY }
         });
         setGenres(genresResponse.data.genres);
 
         const moviesResponse = await api.get('/movie/popular', {
-          params: { language: 'en', api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
+          params: { language: 'en', api_key: API_KEY }
         });
 
         const movieIds = moviesResponse.data.results.slice(0, 5).map(movie => movie.id);
         const keywordsPromises = movieIds.map(id => 
           api.get(`/movie/${id}/keywords`, {
-            params: { api_key: 'c74603ff98c5e43ed99e1ed37812c876' }
+            params: { api_key: API_KEY }
           })
         );
 
