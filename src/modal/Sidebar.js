@@ -27,6 +27,7 @@ const SidebarContent = styled.aside`
   z-index: 1000;
   overflow-y: auto;
   box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+  padding-top: 77px;
 `;
 
 const CloseButton = styled.button`
@@ -191,27 +192,31 @@ const Sidebar = ({ isOpen, onClose, clearSearchValue }) => {
 
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
-        <NavTitle><FaFilm /> Genres</NavTitle>
-        <NavList>
-          {genres.map(genre => (
-            <NavItem key={genre.id}>
-              <NavLink href="#" onClick={(e) => { e.preventDefault(); handleGenreClick(genre.id, genre.name); }}>
-                {genre.name}
-              </NavLink>
-            </NavItem>
-          ))}
-        </NavList>
+        <NavSection>
+          <NavTitle><FaFilm /> Genres</NavTitle>
+          <NavList>
+            {genres.map(genre => (
+              <NavItem key={genre.id}>
+                <NavLink href="#" onClick={(e) => { e.preventDefault(); handleGenreClick(genre.id, genre.name); }}>
+                  {genre.name}
+                </NavLink>
+              </NavItem>
+            ))}
+          </NavList>
+        </NavSection>
 
-        <NavTitle><FaTags /> Top 21's Keywords</NavTitle>
-        <NavList>
-          {keywords.map((keyword, index) => (
-            <NavItem key={index}>
-              <NavLink href="#" onClick={(e) => { e.preventDefault(); handleKeywordClick(keyword); }}>
-                {keyword}
-              </NavLink>
-            </NavItem>
-          ))}
-        </NavList>
+        <NavSection>
+          <NavTitle><FaTags /> Top 21's Keywords</NavTitle>
+          <NavList>
+            {keywords.map((keyword, index) => (
+              <NavItem key={index}>
+                <NavLink href="#" onClick={(e) => { e.preventDefault(); handleKeywordClick(keyword); }}>
+                  {keyword}
+                </NavLink>
+              </NavItem>
+            ))}
+          </NavList>
+        </NavSection>
       </SidebarContent>
     </SidebarOverlay>
   );
