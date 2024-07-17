@@ -5,6 +5,8 @@ import { useCookies } from "react-cookie";
 import "./Member.css";
 
 export function Modify() {
+
+  //현재 수정중인 회원정보.
   const [memberData, setMemberData] = useState({
     mid: "",
     mnick: "",
@@ -15,6 +17,7 @@ export function Modify() {
     currentPw: ""
   });
 
+  //현재 회원의 닉네임과 이메일 값 중복 제거.
   const [originalData, setOriginalData] = useState({
     mnick: "",
     memail: ""
@@ -29,10 +32,14 @@ export function Modify() {
       navigate("/login");
     } else {
       setAuthToken(cookies.accessToken);
+      
+      // 서버에서 회원 정보를 가져옴
       api.get("/api/auth/modify")
       .then(response => {
         const { mid, mnick, memail, mphone } = response.data;
+        // 가져온 정보로 상태 업데이트
         setMemberData({ mid, mnick, memail, mphone, mpw: "", checkMpw: "", currentPw: "" });
+       // 원래의 닉네임과 이메일을 상태에 저장 // 현재 회원의 이메일 닉네임 중복여부.
         setOriginalData({ mnick, memail });
       })
       .catch(error => {
@@ -95,6 +102,7 @@ export function Modify() {
     delete dataToSend.currentPw; // 현재 비밀번호 필드는 서버로 전송하지 않음
 
     try {
+      // 서버에 회원 정보 수정 요청
       const response = await api.put("/api/auth/modify", { ...dataToSend, originalMnick: originalData.mnick, originalMemail: originalData.memail });
       alert(response.data);
       navigate("/mypage");
