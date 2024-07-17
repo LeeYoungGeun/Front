@@ -94,7 +94,7 @@ const MovieInfo = styled.div`
 
 const MovieModal = ({ movie, onClose }) => {
   const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
-  const { rating, setRating, review, setReview, reviews, handleSubmitReview } = useReviews(movie.id,movie.title);
+  const { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStarts  } = useReviews(movie.id,movie.title);
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
 
   useEffect(() => {
@@ -143,6 +143,11 @@ const MovieModal = ({ movie, onClose }) => {
                 review={review}
                 setReview={setReview}
                 handleSubmitReview={handleSubmitReview}
+                fetchReviews={fetchReviews}
+                loading={loading}
+                hasMore={hasMore}
+                total={total}
+                allStarts={allStarts}
               />
             </MovieInfo>
           </>

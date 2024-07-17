@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {Cookies} from 'react-cookie';
 
 const cookies = new Cookies();
@@ -18,31 +18,70 @@ const useReviews = (movie_id,movie_title) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [total, setToTal] = useState(0);
+  const [allStarts, setAllStarts] = useState(0);
+  const [user, setUser] = useState('');
   
-  let option_review_list = {
-    method: 'post',
-    url: 'http://localhost:8090/api/review/listOfReview',
-    headers: headers_val,
-    // movie_id, user_id , review_text, review_star
-    data : JSON.stringify({
-      "movie_id": movie_id
-    })
-  };
+  const fetchReviews = useCallback(async () => {
+    if (loading || !hasMore) return;
+
+    setLoading(true);
+    try {
+      let option_review_listOfReviewPaginated = {
+        method: 'post',
+        url: 'http://localhost:8090/api/review/listOfReviewPaginated',
+        headers: headers_val,
+        data : JSON.stringify({
+          "movie_id": movie_id,
+          "page": page,
+          "size": 6
+        })
+      };
+
+      axios.request(option_review_listOfReviewPaginated)
+      .then((response) => {
+        const newReviews = response.data.dtoList.map(review => ({
+          review_id: review.review_id,
+          text: review.review_text,
+          rating: review.review_star,
+          user : review.mid
+        }));
+
+        setToTal(() => [response.data.total]);
+        setAllStarts(() => [response.data.allStart]);
+        setReviews(prevReviews => [...prevReviews, ...newReviews]);
+        
+         console.log('Fetched reviews:', newReviews);
+        // console.log('Current reviews state:', reviews);
+
+        setPage(prevPage => prevPage + 1);
+        //setHasMore(newReviews.length === 6 && reviews.length < total);
+        setHasMore(newReviews.length === 6 );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }catch (error) {
+      console.error('Error fetching reviews:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [movie_id, page, loading, hasMore]);
 
   useEffect(() => {
-    axios.request(option_review_list)
-    .then((response) => {
-      console.log(JSON.stringify(response.data));
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-  },[]);
+    setReviews([]); // 영화가 변경될 때 리뷰 목록 초기화
+    setPage(0);
+    setHasMore(true);
+    fetchReviews();
+  }, [movie_id]);
 
   const handleSubmitReview = () => {    
     
     if (review.trim() !== '') {
-      setReviews([...reviews, { text: review, rating }]);
+      setReviews([...reviews, { text: review, rating, user}]);
       setReview('');
       setRating(0);
       
@@ -80,17 +119,13 @@ const useReviews = (movie_id,movie_title) => {
           return false;
         }
       })
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-
-      })
       .catch((error) => {
         console.log(error);
       });
     }
   };
 
-  return { rating, setRating, review, setReview, reviews, handleSubmitReview };
+  return { rating, setRating, review, setReview, reviews, handleSubmitReview,  fetchReviews, loading, hasMore, total, allStarts };
 };
 
 export default useReviews;

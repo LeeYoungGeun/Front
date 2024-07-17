@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FaStar } from 'react-icons/fa';
 import styled, { css } from 'styled-components';
 
@@ -16,8 +16,9 @@ const scrollbarStyle = css`
 `;
 
 const StyledReviewSection = styled.div`
-    margin-bottom: 10px;
-  height: 30%;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  max-height: 40%;
   width: auto;
   ${scrollbarStyle}
 `;
@@ -78,16 +79,14 @@ const ReviewList = styled.ul`
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1); 
   border-radius: 5px;
+  max-height: 60%;
   overflow-y: auto;
-  height: 75%;
   ${scrollbarStyle}
 `;
 
 const ReviewItem = styled.li`
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 `;
-
-
 
 const ReviewSection = ({ 
   reviews, 
@@ -95,18 +94,38 @@ const ReviewSection = ({
   setRating, 
   review, 
   setReview, 
-  handleSubmitReview 
-  
+  handleSubmitReview,
+  fetchReviews,
+  loading,
+  hasMore,
+  total,
+  allStarts
 }) => {
 
     const handleRating = (value) => setRating(value);
     const handleReviewChange = (e) => setReview(e.target.value);
 
+    const observer = useRef();
+    const lastReviewElementRef = useCallback(node => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchReviews();
+        }
+      });
+      if (node) observer.current.observe(node);
+    }, [loading, hasMore, fetchReviews]);
+
+    console.log('Rendering reviews:', reviews);
+    // console.log("allStarts" + allStarts);
+    // console.log("total" + total);
+    
   return (
     <StyledReviewSection>
       <ReviewHeader>
         <MovieReview>한 줄 리뷰</MovieReview>
-        <MovieReviewCount>총 {reviews.length}건 | 평점 {reviews.length > 0 ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) : '0'}</MovieReviewCount>
+        <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStarts/total).toFixed(1) : '0'}</MovieReviewCount>
     </ReviewHeader>  
 
     <StarRating>
@@ -133,14 +152,19 @@ const ReviewSection = ({
 
     <ReviewList>
         {reviews.map((item, index) => (
-        <ReviewItem key={index}>
+          <ReviewItem 
+            key={item.id || index} 
+            ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+          >
             {[...Array(5)].map((_, i) => (
-            <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
+              <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
             ))}
+            <div>작성자 : {item.user}</div>
             {' '}{item.text}
-        </ReviewItem>
+          </ReviewItem>
         ))}
-    </ReviewList>
+        {loading && <ReviewItem>Loading...</ReviewItem>}
+      </ReviewList>
     </StyledReviewSection>
   );
 };
