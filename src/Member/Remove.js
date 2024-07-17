@@ -43,7 +43,7 @@ function Remove() {
             value={mpw} 
             onChange={(e) => setMpw(e.target.value)} 
           />
-          <button type="submit">탈퇴</button>
+          <button type="submit" className="danger">탈퇴</button>
         </form>
       </div>
     </div>
