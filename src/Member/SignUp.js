@@ -65,7 +65,8 @@ function SignUp() {
       alert("가입에 성공하셨습니다.");
       navigate('/login');
     } catch (error) {
-      if (error.response && error.response.status) {
+      if (error.response) {
+        console.log(error.response)
         alert("이미 존재하는 아이디 및 닉네임입니다.");
       } else {
         console.error('회원가입 실패:', error);
