@@ -58,6 +58,7 @@ function SignUp() {
     }
 
     try {
+      // 회원가입 요청.
       const response = await api.post('/api/auth/signUp', signUpData);
       console.log(response.data);
       // 회원가입 성공 처리
