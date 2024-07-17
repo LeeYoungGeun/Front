@@ -1,14 +1,12 @@
 import styled from "styled-components";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, EffectCoverflow } from 'swiper/modules';
 import "swiper/css";
-import "swiper/css/free-mode";
-import mainBodyRollingBanne1 from '../../img/mainBodyRollingBanne1.jpg';
-import mainBodyRollingBanne2 from '../../img/mainBodyRollingBanne2.jpg';
-import { useNavigate } from "react-router-dom";
+import "swiper/css/effect-coverflow";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectCoverflow } from "swiper/modules";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import MovieModal from "../../modal/MovieModal";
+import { useNavigate } from "react-router-dom";
 
 const MainBodyRollingBannerAreaStyle = styled.div`
   height: 60vh;
@@ -39,12 +37,12 @@ const StyledSwiper = styled(Swiper)`
     z-index: 2;
   }
 
-  .swiper-slide-prev, .swiper-slide-next {
+  .swiper-slide-prev,
+  .swiper-slide-next {
     opacity: 0.7;
     filter: brightness(70%) blur(2px);
     z-index: 1;
   }
-
 `;
 
 const StyledSwiperSlide = styled(SwiperSlide)`
@@ -63,7 +61,7 @@ const SlideImage = styled.div`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: ${props => props.src ? `url(${props.src})` : 'none'};
+  background-image: ${props => (props.src ? `url(${props.src})` : "none")};
   transition: all 0.5s ease;
 `;
 
@@ -103,7 +101,10 @@ const ErrorMessage = styled.div`
   padding: 20px;
 `;
 
-function MainBodyRollingBanner({ clearSearchValue, onKeywordClick }){
+const baseImageUrl = 'https://image.tmdb.org/t/p/original';
+const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
+
+function MainBodyRollingBanner({ clearSearchValue, onKeywordClick }) {
   const [popularMovies, setPopularMovies] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -113,11 +114,7 @@ function MainBodyRollingBanner({ clearSearchValue, onKeywordClick }){
   const fetchPopularMovies = useCallback(async () => {
     try {
       const response = await axios.get('https://api.themoviedb.org/3/movie/popular', {
-        params: { language: 'ko', page: '1' },
-        headers: {
-          accept: 'application/json',
-          Authorization: process.env.REACT_APP_TMDB_ACCESS_TOKEN
-        }
+        params: { language: 'ko', page: '1', api_key: API_KEY },
       });
 
       const moviesWithBackdrops = response.data.results.filter(movie => movie.backdrop_path);
@@ -174,34 +171,34 @@ function MainBodyRollingBanner({ clearSearchValue, onKeywordClick }){
     return <ErrorMessage>{error}</ErrorMessage>;
   }
 
-    return(
-        <MainBodyRollingBannerAreaStyle>
-          <RollingImgArea>
-            {isLoaded && (
-              <StyledSwiper {...swiperParams}>    
-                {popularMovies.map((movie) => (
-                  <StyledSwiperSlide key={movie.id} onClick={() => handleMovieClick(movie)}>
-                    <SlideImage 
-                      src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
-                      alt={`영화 ${movie.title}의 배경 이미지`}
-                      aria-label={`영화 ${movie.title} 선택`}
-                    />
-                    <MovieTitle>{movie.title}</MovieTitle>
-                  </StyledSwiperSlide>
-                ))}
-              </StyledSwiper>
-            )}
-          </RollingImgArea>
-          {selectedMovie && (
-            <MovieModal
-              movie={selectedMovie} 
-              onClose={() => setSelectedMovie(null)}
-              onGenreClick={handleGenreClick}
-              onKeywordClick={handleKeywordClick}
-            />
-          )}
-        </MainBodyRollingBannerAreaStyle>
-    );
+  return (
+    <MainBodyRollingBannerAreaStyle>
+      <RollingImgArea>
+        {isLoaded && (
+          <StyledSwiper {...swiperParams}>    
+            {popularMovies.map((movie) => (
+              <StyledSwiperSlide key={movie.id} onClick={() => handleMovieClick(movie)}>
+                <SlideImage 
+                  src={`${baseImageUrl}${movie.backdrop_path}`}
+                  alt={`영화 ${movie.title}의 배경 이미지`}
+                  aria-label={`영화 ${movie.title} 선택`}
+                />
+                <MovieTitle>{movie.title}</MovieTitle>
+              </StyledSwiperSlide>
+            ))}
+          </StyledSwiper>
+        )}
+      </RollingImgArea>
+      {selectedMovie && (
+        <MovieModal
+          movie={selectedMovie} 
+          onClose={() => setSelectedMovie(null)}
+          onGenreClick={handleGenreClick}
+          onKeywordClick={handleKeywordClick}
+        />
+      )}
+    </MainBodyRollingBannerAreaStyle>
+  );
 }
 
-export {MainBodyRollingBanner};
+export { MainBodyRollingBanner };
