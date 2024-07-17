@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import { FaStar } from 'react-icons/fa';
-import styled, { css } from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -88,6 +88,25 @@ const ReviewItem = styled.li`
   margin-bottom: 15px;
 `;
 
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: ${rotate} 1s linear infinite;
+  margin: 10px auto;
+`;
+
 const ReviewSection = ({ 
   reviews, 
   rating, 
@@ -98,7 +117,6 @@ const ReviewSection = ({
   fetchReviews,
   loading,
   hasMore,
-
   total,
   allStars
 
@@ -121,7 +139,6 @@ const ReviewSection = ({
 
 
     console.log('Rendering reviews:', reviews);
-
     console.log("allStars" + allStars);
     console.log("total" + total);
 
@@ -168,7 +185,8 @@ const ReviewSection = ({
               {' '}{item.text}
             </ReviewItem>
           ))}
-          {loading && <ReviewItem>Loading...</ReviewItem>}
+          {loading && <LoadingSpinner />}
+          {!loading && !hasMore && <div>모든 리뷰를 불러왔습니다.</div>}
         </ReviewList>
       </StyledReviewSection>
     );

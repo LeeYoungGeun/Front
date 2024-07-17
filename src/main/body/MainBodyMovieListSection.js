@@ -3,10 +3,11 @@ import "swiper/css";
 import "swiper/css/free-mode";
 import { FreeMode } from 'swiper/modules';
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import MovieModal from "../../modal/MovieModal";
 import { Cookies } from 'react-cookie';
 import api, { setAuthToken } from "../../Member/api";  // Import the axios instance and setAuthToken function
+import { useNavigate } from "react-router-dom";
 
 // Style definitions
 const MainBodyMovieListSectionStyle = styled.div`
@@ -74,6 +75,7 @@ const fetchMovies = async (options, setData) => {
 
 function MainBodyMovieListSection() {
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const navigate = useNavigate();
 
   //현재 상영작 20
   const [row1, setRow1] = useState([]);
@@ -117,6 +119,16 @@ function MainBodyMovieListSection() {
       headers: getAuthHeaders()
     }, setRow4);
   }, []);
+
+  const handleGenreClick = useCallback((genreId, genreName) => {
+    setSelectedMovie(null);
+    navigate(`/search?genre=${genreId}`, { state: { genreName } });
+  }, [navigate]);
+
+  const handleKeywordClick = useCallback((keyword) => {
+    setSelectedMovie(null);
+    navigate(`/search?keyword=${keyword}`);
+  }, [navigate]);
 
   return (
     <MainBodyMovieListSectionStyle>
@@ -183,8 +195,15 @@ function MainBodyMovieListSection() {
           ))
           : null}
 
-        {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
-
+            {selectedMovie && (
+              <MovieModal 
+                movie={selectedMovie} 
+                onClose={() => setSelectedMovie(null)}
+                onGenreClick={handleGenreClick}
+                onKeywordClick={handleKeywordClick}
+                
+              />
+            )}
       </MovieListSwiper>
     </MainBodyMovieListSectionStyle>
   );

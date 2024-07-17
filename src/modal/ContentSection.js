@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { FaPlay } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import api from '../Member/api';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -127,6 +129,28 @@ const CastImage = styled.img`
   object-fit: cover;
 `;
 
+const KeywordList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const KeywordItem = styled.span`
+  background-color: transparent;
+  color: white;
+  padding: 0;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: bolder;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 const ContentSection = ({ 
   movie, 
   director, 
@@ -135,14 +159,39 @@ const ContentSection = ({
   cast, 
   productionCompanies, 
   trailerId, 
-  setShowTrailer 
+  setShowTrailer,
+  onKeywordClick,
+  onGenreClick
 }) => {
   const [showFullOverview, setShowFullOverview] = useState(false);
+  const [keywords, setKeywords] = useState([]);
+  const navigate = useNavigate();
 
   const truncateOverview = (text, maxLength) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength);
   };
+
+  const handleGenreClick = (genreId, genreName) => {
+    onGenreClick(genreId, genreName);
+  };
+
+  const handleKeywordClick = (keyword) => {
+    onKeywordClick(keyword);
+  };
+
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const response = await api.get(`/api/movie/${movie.id}/keywords`);
+        setKeywords(response.data.keywords);
+      } catch (error) {
+        console.error("Error fetching keywords:", error);
+      }
+    };
+  
+    fetchKeywords();
+  }, [movie.id]);
 
   return (
     <Wrapper>
@@ -171,7 +220,12 @@ const ContentSection = ({
 
       <GenreList>
         {genres && genres.map(genre => (
-          <GenreItem key={genre.id}>{genre.name}</GenreItem>
+          <GenreItem 
+            key={genre.id}
+            onClick={() => handleGenreClick(genre.id, genre.name)}
+          >
+            {genre.name}
+          </GenreItem>
         ))}
       </GenreList>
 
@@ -198,13 +252,27 @@ const ContentSection = ({
             <CastImage 
                 src={actor.profile_path 
                 ? `https://image.tmdb.org/t/p/w200${actor.profile_path}`
-                : 'path_to_default_image.jpg'} 
+                : '../../img/NoActorImage.png'} 
                 alt={actor.name} 
             />
             <p>{actor.name}</p>
             </CastItem>
         ))}
       </CastList>
+
+      <KeywordList>
+        키워드:
+        {keywords.slice(0, 10).map((keyword, index, array) => (
+          <KeywordItem 
+            key={keyword.id} 
+            onClick={() => handleKeywordClick(keyword.name)}
+          >
+            {keyword.name}
+            {index < array.length - 1 ? ',' : ''}
+          </KeywordItem>
+        ))}
+      </KeywordList>
+
     </Wrapper>
   );
 };
