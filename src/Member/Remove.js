@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import api from "./api";
-import "./SignUp.css";
+import "./Member.css";
 
 function Remove() {
   const [mpw, setMpw] = useState("");
@@ -33,9 +33,9 @@ function Remove() {
   };
 
   return (
-    <div className="signupBackground">
-      <div className="signup-container">
-        <form className="signup-form" onSubmit={handleSubmit}>
+    <div className="mainBackground">
+      <div className="main-container">
+        <form className="main-form" onSubmit={handleSubmit}>
           <h1>정말 탈퇴 하시겠습니까?</h1>
           <input 
             placeholder="비밀번호 입력" 

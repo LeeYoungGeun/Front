@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api, { setAuthToken } from "./api";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import "./Modify.css";
+import "./Member.css";
 
 export function Modify() {
   const [memberData, setMemberData] = useState({
@@ -84,16 +84,16 @@ export function Modify() {
   };
 
   return (
-    <div className="modifyBackground">
-      <div className="modify-container">
-        <form className="modify-form" onSubmit={handleSubmit}>
+    <div className="mainBackground">
+      <div className="main-container">
+        <form className="main-form" onSubmit={handleSubmit}>
           <h2>회원정보수정</h2>
           <input name="mid" value={memberData.mid} disabled />
           <input name="mnick" placeholder="닉네임" value={memberData.mnick} onChange={handleChange} />
           <input name="memail" placeholder="이메일" type="email" value={memberData.memail} onChange={handleChange} />
           <input name="mphone" placeholder="핸드폰번호" value={memberData.mphone} onChange={handleChange} />
           <input name="mpw" placeholder="비밀번호" type="password" value={memberData.mpw} onChange={handleChange} />
-          <button type="submit">완료</button>
+          <button type="submit" className="danger">완료</button>
         </form>
       </div>
     </div>
@@ -129,12 +129,12 @@ export function ModifyCheck() {
   };
 
   return (
-    <div className="modifyBackground">
-      <div className="modify-container">
-        <form className="modify-form" onSubmit={handleSubmit}>
+    <div className="mainBackground">
+      <div className="main-container">
+        <form className="main-form" onSubmit={handleSubmit}>
           <h2>비밀번호를 입력해주세요</h2>
           <input placeholder="비밀번호 입력" type="password" value={mpw} onChange={(e) => setMpw(e.target.value)} />
-          <button type="submit">완료</button>
+          <button type="submit" className="danger">완료</button>
         </form>
       </div>
     </div>

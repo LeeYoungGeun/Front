@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "./api";
 import { useNavigate } from "react-router-dom";
-import "./SignUp.css";
+import "./Member.css";
 
 function SignUp() {
   const [signUpData, setSignUpData] = useState({
@@ -74,9 +74,9 @@ function SignUp() {
   };
 
   return (
-    <div className="signupBackground">
-      <div className="signup-container">
-        <form className="signup-form" onSubmit={handleSignUp}>
+    <div className="mainBackground">
+      <div className="main-container">
+        <form className="main-form" onSubmit={handleSignUp}>
           <h2>회원가입</h2>
           <input name="mname" value={signUpData.mname} onChange={handleSignUpChange} placeholder="이름" />
           <input name="mid" value={signUpData.mid} onChange={handleSignUpChange} placeholder="아이디" />
@@ -85,7 +85,7 @@ function SignUp() {
           <input name="mnick" value={signUpData.mnick} onChange={handleSignUpChange} placeholder="닉네임" />
           <input name="memail" type="email" value={signUpData.memail} onChange={handleSignUpChange} placeholder="이메일" />
           <input name="mphone" value={signUpData.mphone} onChange={handleSignUpChange} placeholder="핸드폰번호" />
-          <button type="submit">회원가입</button>
+          <button type="submit" className="danger">회원가입</button>
         </form>
       </div>
     </div>
