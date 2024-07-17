@@ -1,73 +1,67 @@
-import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
-import {Cookies} from 'react-cookie';
+import { Cookies } from 'react-cookie';
+import api from '../Member/api';
 
 const cookies = new Cookies();
 
 const getCookie = () => {
   console.log(cookies.get("accessToken"));
   return cookies.get("accessToken");
- }
-
-const headers_val = {
-  'Content-Type': 'application/json', 
-  'Authorization': `Bearer ${getCookie()}`
 }
 
-const useReviews = (movie_id,movie_title) => {
-  //별점
+const useReviews = (movie_id, movie_title) => {
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-  const [total, setToTal] = useState(0);
-  const [allStarts, setAllStarts] = useState(0);
-  const [user, setUser] = useState('');
-  
+  const [total, setTotal] = useState(0);
+  const [allStars, setAllStars] = useState(0);
+  const [user] = '';
+  const [error, setError] = useState(null);
+
   const fetchReviews = useCallback(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
+    setError(null);  // Reset error state before new request
     try {
-      let option_review_listOfReviewPaginated = {
-        method: 'post',
-        url: 'http://localhost:8090/api/review/listOfReviewPaginated',
-        headers: headers_val,
-        data : JSON.stringify({
-          "movie_id": movie_id,
-          "page": page,
-          "size": 6
-        })
+      const requestData = {
+        "movie_id": movie_id,
+        "page": page,
+        "size": 6
       };
+      console.log('Request data:', requestData);
 
-      axios.request(option_review_listOfReviewPaginated)
-      .then((response) => {
-        const newReviews = response.data.dtoList.map(review => ({
-          review_id: review.review_id,
-          text: review.review_text,
-          rating: review.review_star,
-          user : review.mid
-        }));
-
-
-        setToTal(() => [response.data.total]);
-        setAllStarts(() => [response.data.allStart]);
-        setReviews(prevReviews => [...prevReviews, ...newReviews]);
-        
-         console.log('Fetched reviews:', newReviews);
-        // console.log('Current reviews state:', reviews);
-
-        setPage(prevPage => prevPage + 1);
-        //setHasMore(newReviews.length === 6 && reviews.length < total);
-        setHasMore(newReviews.length === 6 );
-      })
-      .catch((error) => {
-        console.log(error);
+      const response = await api.post('/api/review/listOfReviewPaginated', requestData, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getCookie()}`
+        }
       });
-    }catch (error) {
+
+      console.log('Server response:', response);
+      const newReviews = (response.data.dtoList || []).map(review => ({
+        review_id: review.review_id,
+        text: review.review_text,
+        rating: review.review_star,
+        user: review.mid
+      }));
+
+      setTotal(response.data.total || 0);
+      setAllStars(response.data.allStars || 0);
+      setReviews(prevReviews => [...prevReviews, ...newReviews]);
+
+      console.log('Fetched reviews:', newReviews);
+      console.log('setAllStars', allStars);
+
+      setPage(prevPage => prevPage + 1);
+      setHasMore(newReviews.length === 6);
+    } catch (error) {
       console.error('Error fetching reviews:', error);
+      console.error('Error response:', error.response);  // Log the full error response
+      setError('Error fetching reviews. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -80,54 +74,45 @@ const useReviews = (movie_id,movie_title) => {
     fetchReviews();
   }, [movie_id]);
 
-  const handleSubmitReview = () => {    
-    
+  const handleSubmitReview = async () => {
     if (review.trim() !== '') {
-      setReviews([...reviews, { text: review, rating, user}]);
+      setReviews([...reviews, { text: review, rating, user }]);
       setReview('');
       setRating(0);
-      
-      let option_movie_register = {
-        method: 'post',
-        url: 'http://localhost:8090/api/movie/register',
-        headers: headers_val,
-        data : JSON.stringify({
+
+      try {
+        const movieResponse = await api.post('/api/movie/register', {
           "movie_id": movie_id,
           "movie_title": movie_title
-        })
-      };
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getCookie()}`
+          }
+        });
 
-      let option_review_register = {
-        method: 'post',
-        url: 'http://localhost:8090/api/review/register',
-        headers: headers_val,
-        // movie_id, user_id , review_text, review_star
-        data : JSON.stringify({
-          "movie_id": movie_id,
-          "review_text": review,
-          "review_star": rating
-        })
-      };
-
-      axios.request(option_movie_register)
-      .then((response) => {
-        //해당 영화 id가 db id와 일치하면
-        if (response.data.result === movie_id) { 
-          //댓글 등록 api 호출
-          return axios.request(option_review_register)
-        }else{
-        //일치 하지않으면
-          alert("영화 정보가 일치하지 않습니다.")
-          return false;
+        if (movieResponse.data.result === movie_id) {
+          await api.post('/api/review/register', {
+            "movie_id": movie_id,
+            "review_text": review,
+            "review_star": rating
+          }, {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${getCookie()}`
+            }
+          });
+        } else {
+          alert("영화 정보가 일치하지 않습니다.");
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        setError('Error submitting review. Please try again later.');
+      }
     }
   };
 
-  return { rating, setRating, review, setReview, reviews, handleSubmitReview,  fetchReviews, loading, hasMore, total, allStarts };
+  return { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStars, error };
 };
 
 export default useReviews;
