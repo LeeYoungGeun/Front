@@ -4,7 +4,8 @@ import {Cookies} from 'react-cookie';
 
 const cookies = new Cookies();
 
-export const getCookie = () => {
+const getCookie = () => {
+  console.log(cookies.get("accessToken"));
   return cookies.get("accessToken");
  }
 
@@ -49,6 +50,7 @@ const useReviews = (movie_id,movie_title) => {
           rating: review.review_star,
           user : review.mid
         }));
+
 
         setToTal(() => [response.data.total]);
         setAllStarts(() => [response.data.allStart]);

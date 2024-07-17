@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {MainBody} from '../Main';
 import { useSearchParams } from "react-router-dom";
 import MovieModal from "../../modal/MovieModal";
+import {Cookies} from 'react-cookie';
 //import MovieListImage1 from '../../img/movieImg.jpg';
 
 const SearchResultListAreaStyle = styled.div`
@@ -37,7 +38,15 @@ const SearchResultListImg = styled.img`
 
 //api base url 
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
-const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
+
+const cookies = new Cookies();
+
+const getCookie = () => { 
+  console.log(cookies.get("accessToken"));
+  return cookies.get("accessToken");
+ }
+
+ const accessToken = `Bearer ${getCookie()}`;
 
 // test
 // const searchParam = "마스크";

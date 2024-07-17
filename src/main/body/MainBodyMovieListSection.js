@@ -6,6 +6,7 @@ import { FreeMode } from 'swiper/modules';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
 import MovieModal from "../../modal/MovieModal";
+import { Cookies } from 'react-cookie';
 
 //test img
 //import MovieListImage1 from '../img/movieImg.jpg';
@@ -56,7 +57,14 @@ const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 //영화 목록 종류 
 
 //Access Token Auth
-const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
+const cookies = new Cookies();
+
+const getCookie = () => { 
+  console.log(cookies.get("accessToken"));
+  return cookies.get("accessToken");
+ }
+
+ const accessToken = `Bearer ${getCookie()}`;
 
 //현재 상영작 20
 const nowPlayingOptions = {
