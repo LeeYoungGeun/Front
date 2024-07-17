@@ -1,11 +1,11 @@
 import styled from "styled-components";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import {MainBody} from '../Main';
+import { MainBody } from '../Main';
 import { useSearchParams } from "react-router-dom";
 import MovieModal from "../../modal/MovieModal";
-//import MovieListImage1 from '../../img/movieImg.jpg';
+import axios from "axios";
 
+// 스타일 정의
 const SearchResultListAreaStyle = styled.div`
   width: 100%;
   margin-top: 40px;
@@ -21,7 +21,7 @@ const SectionTitle = styled.h1`
 
 const SearchResultListArea = styled.ul`
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* Adjust columns as needed */
+  grid-template-columns: repeat(8, 1fr); /* 필요에 따라 열 조정 */
   margin-left: 3em;
 `;
 
@@ -35,70 +35,64 @@ const SearchResultListImg = styled.img`
   cursor: pointer;
 `;
 
-//api base url 
+// 이미지 베이스 URL
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
-const accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjNzQ2MDNmZjk4YzVlNDNlZDk5ZTFlZDM3ODEyYzg3NiIsIm5iZiI6MTcyMDQ4NjEwNi43NjM2ODUsInN1YiI6IjY2ODc1ZTgxZTA3ZGZmNWJmYTVlNGZjMyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Oqqj10jPDW6KLHtEgXBsQU15QlGkah0nwkBxI-9A6xE";
 
-// test
-// const searchParam = "마스크";
+// TMDB API 키
+const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
 
-  function SearchResultList() {
+function SearchResultList() {
+  const [selectedMovie, setSelectedMovie] = useState(null);
+  const [searchParams] = useSearchParams();
+  const searchParam = searchParams.get('searchParam');
+  console.log("searchParam:", searchParam);
 
-        const [selectedMovie, setSelectedMovie] = useState(null);
+  const [results, setResults] = useState([]);
 
-        let [searchParamVal] = useSearchParams();
-        let searchParam = searchParamVal.get('searchParam');
-        console.log("searchParam : " + searchParam);
+  useEffect(() => {
+    if (searchParam && searchParam.trim()) { // Ensure searchParam is not null or empty
+      console.log("Fetching results for:", searchParam);
 
+      // 영화 검색
+      const fetchSearchResults = async () => {
         const searchOptions = {
-            method: 'GET',
-            url: 'https://api.themoviedb.org/3/search/movie',
-            params: {language: 'ko', include_adult: 'false', query : searchParam},
-            headers: {
-              accept: 'application/json',
-              Authorization: accessToken
-            }
-          };
+          method: 'GET',
+          url: `https://api.themoviedb.org/3/search/movie`,
+          params: { api_key: API_KEY, language: 'ko', include_adult: 'false', query: searchParam },
+        };
 
-        let [results, setResults] = useState();
+        try {
+          const response = await axios.request(searchOptions);
+          console.log('API Response:', response); // 응답 데이터 출력
+          setResults(response.data.results);
+        } catch (error) {
+          console.error('API 요청 실패:', error); // 오류 메시지 출력
+        }
+      };
 
-        useEffect(() => {
-            //영화 검색 
-            axios 
-            .request(searchOptions)
-            .then(function(response){
-                setResults(response.data.results);
-                // console.log('api req : ');
-                // console.log(response.data.results[0].id);
-                // console.log(response.data.results[0].title);
-                // console.log(response.data.results[0].poster_path);
-            })
-            .catch(function (error) {
-            console.log(error);
-        });
-      },[results])
-
-      console.log("results : " + results);
-
-      return (
-        <MainBody>
-            <SearchResultListAreaStyle>
-              <SectionTitle># 검색 결과</SectionTitle>
-              <SearchResultListArea>
-                {Array.isArray(results) && results.length > 0
-                ? results.map((movie, index) => (
-                    <SearchResultListImgLi key={index} onClick={() => setSelectedMovie(movie)}>
-                        <SearchResultListImg src={baseImageUrl + movie.poster_path} alt={`Search Results Movie ${index + 1}`} />
-                    </SearchResultListImgLi>
-                    ))
-                : <h2 style={{'fontSize' : '1.5em'}}>결과없음</h2>}    
-                {/* test <SearchResultListImg src={MovieListImage1} alt="Movie 1"/> */}
-              </SearchResultListArea>
-          </SearchResultListAreaStyle>
-          {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
-        </MainBody>
-      );
-    
+      fetchSearchResults();
+    } else {
+      console.log("searchParam is null or empty.");
     }
-    
-    export default SearchResultList;
+  }, [searchParam]);
+
+  return (
+    <MainBody>
+      <SearchResultListAreaStyle>
+        <SectionTitle># 검색 결과</SectionTitle>
+        <SearchResultListArea>
+          {Array.isArray(results) && results.length > 0
+            ? results.map((movie, index) => (
+                <SearchResultListImgLi key={index} onClick={() => setSelectedMovie(movie)}>
+                  <SearchResultListImg src={baseImageUrl + movie.poster_path} alt={`Search Results Movie ${index + 1}`} />
+                </SearchResultListImgLi>
+              ))
+            : <h2 style={{'fontSize' : '1.5em'}}>결과없음</h2>}
+        </SearchResultListArea>
+      </SearchResultListAreaStyle>
+      {selectedMovie && <MovieModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />}
+    </MainBody>
+  );
+}
+
+export default SearchResultList;

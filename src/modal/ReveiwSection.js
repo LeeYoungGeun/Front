@@ -98,8 +98,8 @@ const ReviewSection = ({
   fetchReviews,
   loading,
   hasMore,
-  total,
-  allStarts
+  total = 0, // Default value to avoid NaN
+  allStarts = 0 // Default value to avoid NaN
 }) => {
 
     const handleRating = (value) => setRating(value);
@@ -118,55 +118,53 @@ const ReviewSection = ({
     }, [loading, hasMore, fetchReviews]);
 
     console.log('Rendering reviews:', reviews);
-    // console.log("allStarts" + allStarts);
-    // console.log("total" + total);
-    
-  return (
-    <StyledReviewSection>
-      <ReviewHeader>
-        <MovieReview>한 줄 리뷰</MovieReview>
-        <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStarts/total).toFixed(1) : '0'}</MovieReviewCount>
-    </ReviewHeader>  
 
-    <StarRating>
-        {[...Array(5)].map((_, index) => (
-        <FaStar
-            key={index}
-            color={index < rating ? "#ffc107" : "#e4e5e9"}
-            onClick={() => handleRating(index + 1)}
-            style={{ cursor: 'pointer' }}
-        />
-        ))}
-    </StarRating>
+    return (
+      <StyledReviewSection>
+        <ReviewHeader>
+          <MovieReview>한 줄 리뷰</MovieReview>
+          <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStarts / total).toFixed(1) : '0'}</MovieReviewCount>
+      </ReviewHeader>  
 
-    <ReviewInputContainer>
-        <ReviewInput 
-        type="text" 
-        placeholder="리뷰를 작성해주세요" 
-        value={review}
-        onChange={handleReviewChange}
-        />
+      <StarRating>
+          {[...Array(5)].map((_, index) => (
+          <FaStar
+              key={index}
+              color={index < rating ? "#ffc107" : "#e4e5e9"}
+              onClick={() => handleRating(index + 1)}
+              style={{ cursor: 'pointer' }}
+          />
+          ))}
+      </StarRating>
 
-        <SubmitReview onClick={handleSubmitReview}>댓글</SubmitReview>
-    </ReviewInputContainer>
+      <ReviewInputContainer>
+          <ReviewInput 
+          type="text" 
+          placeholder="리뷰를 작성해주세요" 
+          value={review}
+          onChange={handleReviewChange}
+          />
 
-    <ReviewList>
-        {reviews.map((item, index) => (
-          <ReviewItem 
-            key={item.id || index} 
-            ref={index === reviews.length - 1 ? lastReviewElementRef : null}
-          >
-            {[...Array(5)].map((_, i) => (
-              <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
-            ))}
-            <div>작성자 : {item.user}</div>
-            {' '}{item.text}
-          </ReviewItem>
-        ))}
-        {loading && <ReviewItem>Loading...</ReviewItem>}
-      </ReviewList>
-    </StyledReviewSection>
-  );
+          <SubmitReview onClick={handleSubmitReview}>댓글</SubmitReview>
+      </ReviewInputContainer>
+
+      <ReviewList>
+          {reviews.map((item, index) => (
+            <ReviewItem 
+              key={item.id || index} 
+              ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+            >
+              {[...Array(5)].map((_, i) => (
+                <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
+              ))}
+              <div>작성자 : {item.user}</div>
+              {' '}{item.text}
+            </ReviewItem>
+          ))}
+          {loading && <ReviewItem>Loading...</ReviewItem>}
+        </ReviewList>
+      </StyledReviewSection>
+    );
 };
 
 export default ReviewSection;
