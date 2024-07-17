@@ -98,8 +98,10 @@ const ReviewSection = ({
   fetchReviews,
   loading,
   hasMore,
-  total = 0, // Default value to avoid NaN
-  allStarts = 0 // Default value to avoid NaN
+
+  total,
+  allStars
+
 }) => {
 
     const handleRating = (value) => setRating(value);
@@ -117,13 +119,18 @@ const ReviewSection = ({
       if (node) observer.current.observe(node);
     }, [loading, hasMore, fetchReviews]);
 
+
     console.log('Rendering reviews:', reviews);
+
+    console.log("allStars" + allStars);
+    console.log("total" + total);
+
 
     return (
       <StyledReviewSection>
         <ReviewHeader>
           <MovieReview>한 줄 리뷰</MovieReview>
-          <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStarts / total).toFixed(1) : '0'}</MovieReviewCount>
+          <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStars / total).toFixed(1) : '0'}</MovieReviewCount>
       </ReviewHeader>  
 
       <StarRating>

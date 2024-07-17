@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Cookies } from 'react-cookie';
-import api from './api';
+import api from '../Member/api';
 
 const cookies = new Cookies();
 
@@ -18,7 +18,7 @@ const useReviews = (movie_id, movie_title) => {
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
   const [allStars, setAllStars] = useState(0);
-  const [user, setUser] = useState('');
+  const [user] = '';
   const [error, setError] = useState(null);
 
   const fetchReviews = useCallback(async () => {
@@ -42,7 +42,6 @@ const useReviews = (movie_id, movie_title) => {
       });
 
       console.log('Server response:', response);
-
       const newReviews = (response.data.dtoList || []).map(review => ({
         review_id: review.review_id,
         text: review.review_text,
@@ -51,10 +50,11 @@ const useReviews = (movie_id, movie_title) => {
       }));
 
       setTotal(response.data.total || 0);
-      setAllStars(response.data.allStart || 0);
+      setAllStars(response.data.allStars || 0);
       setReviews(prevReviews => [...prevReviews, ...newReviews]);
 
       console.log('Fetched reviews:', newReviews);
+      console.log('setAllStars', allStars);
 
       setPage(prevPage => prevPage + 1);
       setHasMore(newReviews.length === 6);
