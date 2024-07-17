@@ -122,7 +122,7 @@ function Header() {
           </>
         )}
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <Link to="/#"><Button>게시판</Button></Link>
+        <Link to="/board"><Button>게시판</Button></Link>
       </MainHeaderButtonArea>
     </MainHeader>
   );

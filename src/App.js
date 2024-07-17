@@ -13,7 +13,13 @@ import { Modify} from './Member/Modify';
 import Remove from './Member/Remove';
 import { useCookies } from 'react-cookie';
 import { setAuthToken } from './Member/api';
+import Board from './board/Board';
+import BoardRead from './board/BoardRead';
+import BoardCreate from './board/BoardCreate';
+import BoardUpdate from './board/BoardUpdate';
+
 import NotFound from './error/NotFound';
+
 
 function App() {
   const [cookies, setCookie] = useCookies(['accessToken']);
@@ -37,8 +43,15 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/modify' element={<Modify />} />
         <Route path='/mypage' element={<Mypage />} />
+        <Route path='/board' element={<Board />}>
+          <Route path=':page' element={<Board />} />
+        </Route>
+        <Route path='/boardread/:paramBno' element={<BoardRead />} />
+        <Route path='/boardcreate' element={<BoardCreate />}></Route>
+        <Route path='/boardupdate' element={<BoardUpdate />}></Route>
         <Route path='/checkpw' element={<Remove />} />
         <Route path='*' element={<NotFound />} />
+
       </Routes>
       <Footer/>
     </MainContainer>
