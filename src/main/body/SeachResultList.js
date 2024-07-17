@@ -4,8 +4,9 @@ import { MainBody } from '../Main';
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import MovieModal from "../../modal/MovieModal";
 import axios from "axios";
+import { debounce } from 'lodash';
 
-// 스타일 정의
+// 스타일 정의 (변경 없음)
 const SearchResultListAreaStyle = styled.div`
   width: 100%;
   margin-top: 40px;
@@ -21,8 +22,7 @@ const SectionTitle = styled.h1`
 
 const SearchResultListArea = styled.ul`
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 필요에 따라 열 조정 */
-  /* grid-template-columns: repeat(auto-fill, 167px); 보고 아래거로 변경*/
+  grid-template-columns: repeat(8, 1fr);
   gap: 10px;
   justify-content: center;
   margin-left: 3em;
@@ -72,7 +72,7 @@ const LoadingMessage = styled.p`
 // 이미지 베이스 URL
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 
-// TMDB API 키
+// 환경 변수를 통한 API 키
 const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
 
 function SearchResultList({ clearSearchValue }) {
@@ -93,36 +93,48 @@ function SearchResultList({ clearSearchValue }) {
   const fetchMovies = useCallback(async (newSearch = false) => {
     if (loading || (!hasMore && !newSearch)) return;
     setLoading(true);
-    
+
+    console.log("Fetching movies...", { searchParam, genreId, keyword, page: newSearch ? 1 : page, newSearch });
+
     const startTime = Date.now();
     
-    let url, params;
+    let url = '';
+    let params = {};
+
     if (searchParam) {
       url = 'https://api.themoviedb.org/3/search/movie';
-      params = { language: 'ko', include_adult: 'false', query: searchParam, page: newSearch ? 1 : page };
+      params = { api_key: API_KEY, language: 'ko', include_adult: 'false', query: searchParam, page: newSearch ? 1 : page };
     } else if (genreId) {
       url = 'https://api.themoviedb.org/3/discover/movie';
-      params = { language: 'ko', include_adult: 'false', with_genres: genreId, page: newSearch ? 1 : page };
+      params = { api_key: API_KEY, language: 'ko', include_adult: 'false', with_genres: genreId, page: newSearch ? 1 : page };
     } else if (keyword) {
-      const keywordResponse = await axios.get('https://api.themoviedb.org/3/search/keyword', {
-        params: { query: keyword },
-        headers: { Authorization: API_KEY }
-      });
-      const keywordId = keywordResponse.data.results[0]?.id;
-      if (keywordId) {
-        url = 'https://api.themoviedb.org/3/discover/movie';
-        params = { with_keywords: keywordId, page: newSearch ? 1 : page };
+      try {
+        const keywordResponse = await axios.get('https://api.themoviedb.org/3/search/keyword', {
+          params: { query: keyword, api_key: API_KEY }
+        });
+        const keywordId = keywordResponse.data.results[0]?.id;
+        if (keywordId) {
+          url = 'https://api.themoviedb.org/3/discover/movie';
+          params = { api_key: API_KEY, with_keywords: keywordId, page: newSearch ? 1 : page };
+        } else {
+          setLoading(false);
+          setHasMore(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error fetching keyword ID:", error);
+        setLoading(false);
+        setHasMore(false);
+        return;
       }
     }
 
     if (url) {
       try {
-        const response = await axios.get(url, {
-          params,
-          headers: { Authorization: API_KEY }
-        });
+        const response = await axios.get(url, { params });
+        console.log('API Response:', response.data);
         const newMovies = response.data.results;
-        
+
         const elapsedTime = Date.now() - startTime;
         if (elapsedTime < 1000) {
           await new Promise(resolve => setTimeout(resolve, 1000 - elapsedTime));
@@ -135,21 +147,88 @@ function SearchResultList({ clearSearchValue }) {
         console.error("Error fetching movies:", error);
         setHasMore(false);
       }
+    } else {
+      console.log("No valid URL for API request");
     }
 
     setLoading(false);
     setIsAtBottom(false);
-  }, [searchParam, genreId, keyword, page, loading, hasMore]);
+  }, [searchParam, genreId, keyword, loading, hasMore]); // page 제거됨
 
   useEffect(() => {
     setResults([]);
     setPage(1);
     setHasMore(true);
-    fetchMovies(true);
+    
+    const fetchInitialMovies = async () => {
+      if (loading) return;
+      setLoading(true);
+
+      console.log("Fetching initial movies...", { searchParam, genreId, keyword });
+
+      const startTime = Date.now();
+      
+      let url = '';
+      let params = {};
+
+      if (searchParam) {
+        url = 'https://api.themoviedb.org/3/search/movie';
+        params = { api_key: API_KEY, language: 'ko', include_adult: 'false', query: searchParam, page: 1 };
+      } else if (genreId) {
+        url = 'https://api.themoviedb.org/3/discover/movie';
+        params = { api_key: API_KEY, language: 'ko', include_adult: 'false', with_genres: genreId, page: 1 };
+      } else if (keyword) {
+        try {
+          const keywordResponse = await axios.get('https://api.themoviedb.org/3/search/keyword', {
+            params: { query: keyword, api_key: API_KEY }
+          });
+          const keywordId = keywordResponse.data.results[0]?.id;
+          if (keywordId) {
+            url = 'https://api.themoviedb.org/3/discover/movie';
+            params = { api_key: API_KEY, with_keywords: keywordId, page: 1 };
+          } else {
+            setLoading(false);
+            setHasMore(false);
+            return;
+          }
+        } catch (error) {
+          console.error("Error fetching keyword ID:", error);
+          setLoading(false);
+          setHasMore(false);
+          return;
+        }
+      }
+
+      if (url) {
+        try {
+          const response = await axios.get(url, { params });
+          console.log('API Response:', response.data);
+          const newMovies = response.data.results;
+
+          const elapsedTime = Date.now() - startTime;
+          if (elapsedTime < 1000) {
+            await new Promise(resolve => setTimeout(resolve, 1000 - elapsedTime));
+          }
+
+          setResults(newMovies);
+          setPage(2);
+          setHasMore(newMovies.length === 20);
+        } catch (error) {
+          console.error("Error fetching movies:", error);
+          setHasMore(false);
+        }
+      } else {
+        console.log("No valid URL for API request");
+      }
+
+      setLoading(false);
+    };
+
+    fetchInitialMovies();
   }, [searchParam, genreId, keyword]);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = debounce(() => {
       const scrollTop = (document.documentElement && document.documentElement.scrollTop) || document.body.scrollTop;
       const scrollHeight = (document.documentElement && document.documentElement.scrollHeight) || document.body.scrollHeight;
       const clientHeight = document.documentElement.clientHeight || window.innerHeight;
@@ -158,26 +237,29 @@ function SearchResultList({ clearSearchValue }) {
       if (scrolledToBottom) {
         setIsAtBottom(true);
       }
-    };
+    }, 200);
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      handleScroll.cancel();
+    };
   }, []);
 
   useEffect(() => {
-    if (isAtBottom && !loading && hasMore) {
+    if (isAtBottom && !loading && hasMore && results.length > 0) {
       fetchMovies(false);
     }
-  }, [isAtBottom, loading, hasMore, fetchMovies]);
+  }, [isAtBottom, loading, hasMore, fetchMovies, results.length]);
 
   const handleGenreClick = useCallback((newGenreId, newGenreName) => {
-    setSelectedMovie(null);  // 모달 닫기
+    setSelectedMovie(null);
     clearSearchValue();
     navigate(`/search?genre=${newGenreId}`, { state: { genreName: newGenreName } });
   }, [clearSearchValue, navigate]);
 
   const handleKeywordClick = useCallback((keyword) => {
-    setSelectedMovie(null);  // 모달 닫기
+    setSelectedMovie(null);
     clearSearchValue();
     navigate(`/search?keyword=${keyword}`);
   }, [clearSearchValue, navigate]);
@@ -189,33 +271,6 @@ function SearchResultList({ clearSearchValue }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [searchParam, genreId, keyword]);
-
-  // useEffect(() => { 문제없으면 삭제
-  //   if (searchParam && searchParam.trim()) { // Ensure searchParam is not null or empty
-  //     console.log("Fetching results for:", searchParam);
-
-  //     // 영화 검색
-  //     const fetchSearchResults = async () => {
-  //       const searchOptions = {
-  //         method: 'GET',
-  //         url: `https://api.themoviedb.org/3/search/movie`,
-  //         params: { api_key: API_KEY, language: 'ko', include_adult: 'false', query: searchParam },
-  //       };
-
-  //       try {
-  //         const response = await axios.request(searchOptions);
-  //         console.log('API Response:', response); // 응답 데이터 출력
-  //         setResults(response.data.results);
-  //       } catch (error) {
-  //         console.error('API 요청 실패:', error); // 오류 메시지 출력
-  //       }
-  //     };
-
-  //     fetchSearchResults();
-  //   } else {
-  //     console.log("searchParam is null or empty.");
-  //   }
-  // }, [searchParam]);
 
   return (
     <MainBody>
@@ -260,7 +315,7 @@ function SearchResultList({ clearSearchValue }) {
           onKeywordClick={handleKeywordClick}
           clearSearchValue={clearSearchValue}
         />
-    )}
+      )}
     </MainBody>
   );
 }
