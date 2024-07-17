@@ -10,7 +10,9 @@ export function Modify() {
     mnick: "",
     memail: "",
     mphone: "",
-    mpw: ""
+    mpw: "",
+    checkMpw: "",
+    currentPw: ""
   });
 
   const [originalData, setOriginalData] = useState({
@@ -30,7 +32,7 @@ export function Modify() {
       api.get("/api/auth/modify")
       .then(response => {
         const { mid, mnick, memail, mphone } = response.data;
-        setMemberData({ mid, mnick, memail, mphone, mpw: "" });
+        setMemberData({ mid, mnick, memail, mphone, mpw: "", checkMpw: "", currentPw: "" });
         setOriginalData({ mnick, memail });
       })
       .catch(error => {
@@ -43,7 +45,7 @@ export function Modify() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { mnick, memail, mphone } = memberData;
+    const { mnick, memail, mphone, mpw, checkMpw, currentPw } = memberData;
 
     // 빈 값 확인
     if (!mnick) {
@@ -59,10 +61,38 @@ export function Modify() {
       return;
     }
 
-    const dataToSend = { ...memberData };
-    if (!dataToSend.mpw) {
-      delete dataToSend.mpw;
+    // 비밀번호 변경을 시도하는 경우 비밀번호 검증
+    if (mpw || checkMpw) {
+      if (!mpw) {
+        alert("새 비밀번호를 입력해주세요");
+        return;
+      }
+      if (mpw !== checkMpw) {
+        alert("새 비밀번호가 일치하지 않습니다.");
+        return;
+      }
+      if (!currentPw) {
+        alert("현재 비밀번호를 입력해주세요");
+        return;
+      }
+
+      // 현재 비밀번호 확인을 서버에 요청
+      try {
+        const response = await api.post("/api/auth/checkPw", { mpw: currentPw });
+        // if (response.status !== 200) {
+        //    alert("현재 비밀번호가 일치하지 않습니다.");
+        //   return;
+        // }
+      } catch (error) {
+        console.error(error);
+        alert("현재 비밀번호가 일치하지 않습니다.");
+        return;
+      }
     }
+
+    const dataToSend = { ...memberData };
+    delete dataToSend.checkMpw; // 확인 비밀번호 필드는 서버로 전송하지 않음
+    delete dataToSend.currentPw; // 현재 비밀번호 필드는 서버로 전송하지 않음
 
     try {
       const response = await api.put("/api/auth/modify", { ...dataToSend, originalMnick: originalData.mnick, originalMemail: originalData.memail });
@@ -92,52 +122,12 @@ export function Modify() {
           <input name="mnick" placeholder="닉네임" value={memberData.mnick} onChange={handleChange} />
           <input name="memail" placeholder="이메일" type="email" value={memberData.memail} onChange={handleChange} />
           <input name="mphone" placeholder="핸드폰번호" value={memberData.mphone} onChange={handleChange} />
-          <input name="mpw" placeholder="비밀번호" type="password" value={memberData.mpw} onChange={handleChange} />
+          <input name="currentPw" placeholder="현재 비밀번호" type="password" value={memberData.currentPw} onChange={handleChange} />
+          <input name="mpw" placeholder="새 비밀번호" type="password" value={memberData.mpw} onChange={handleChange} />
+          <input name="checkMpw" placeholder="새 비밀번호 확인" type="password" value={memberData.checkMpw} onChange={handleChange} />
           <button type="submit" className="danger">완료</button>
         </form>
       </div>
     </div>
   );
 }
-
-export function ModifyCheck() {
-  const [mpw, setMpw] = useState("");
-  const navigate = useNavigate();
-  const [cookies] = useCookies(['accessToken']);
-
-  useEffect(() => {
-    if (!cookies.accessToken) {
-      alert("권한이 없습니다.");
-      navigate("/login");
-    } else {
-      setAuthToken(cookies.accessToken);
-    }
-  }, [cookies, navigate]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await api.post("/api/auth/checkPw", { mpw });
-      if (response.status === 200) {
-        navigate("/modify");
-      } 
-    } catch (error) {
-      console.error(error);
-      alert("비밀번호가 일치하지 않습니다.");
-    }
-  };
-
-  return (
-    <div className="mainBackground">
-      <div className="main-container">
-        <form className="main-form" onSubmit={handleSubmit}>
-          <h2>비밀번호를 입력해주세요</h2>
-          <input placeholder="비밀번호 입력" type="password" value={mpw} onChange={(e) => setMpw(e.target.value)} />
-          <button type="submit" className="danger">완료</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
