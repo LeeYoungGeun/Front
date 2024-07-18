@@ -240,6 +240,7 @@ const ContentSection = ({
       </MovieDetailsContainer>
 
       <GenreList>
+        장르 :
         {genres && genres.map(genre => (
           <GenreItem 
             key={genre.id}
