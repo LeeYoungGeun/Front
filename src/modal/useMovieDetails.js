@@ -14,7 +14,7 @@ const useMovieDetails = (movieId) => {
       setIsLoading(true);
       setError(null);
       try {
-        const apiKey = '1b13edfe5dc42a52c844089c69230c8f';
+        const apiKey = 'c74603ff98c5e43ed99e1ed37812c876';
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}&append_to_response=credits,videos`
         );

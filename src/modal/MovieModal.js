@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import styled, { css } from "styled-components";
+import React, { useCallback, useEffect, useState } from 'react';
+import styled, { css, keyframes } from "styled-components";
 import { FaTimes } from 'react-icons/fa';
 import YoutubeIframe from './YoutubeModal';
 import useMovieDetails from './useMovieDetails';
@@ -8,6 +8,7 @@ import useTrailer from './useTrailer';
 import ReviewSection from './ReveiwSection';
 import ContentSection from './ContentSection';
 import TitleSection from './TitleSection';
+import api from './api';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -34,7 +35,6 @@ const ModalOverlay = styled.div`
   align-items: center;
   z-index: 1002;
   ${scrollbarStyle}
-
 `;
 
 const ModalContent = styled.div`
@@ -50,7 +50,6 @@ const ModalContent = styled.div`
   overflow-y: hidden;
   cursor: auto;
   ${scrollbarStyle}
-
   
   @media (max-width: 768px) {
     flex-direction: column;
@@ -92,20 +91,116 @@ const MovieInfo = styled.div`
   max-height: 100%;
 `;
 
-const MovieModal = ({ movie, onClose }) => {
-  const { isLoading, cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
-  const { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStars  } = useReviews(movie.id,movie.title);
+const NoPosterImage = styled.div`
+  width: auto;
+  height: auto;
+  min-width: 510px;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #666;
+  border: 1px solid #ddd;
+  margin-right: 20px;
+  border-radius: 20px;
+`;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: ${rotate} 1s linear infinite;
+  margin: auto;
+`;
+
+const LoadingOverlay = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+`;
+
+const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchValue }) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const { cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
+  const { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStars } = useReviews(movie.id, movie.title);
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
+  const [keywords, setKeywords] = useState([]);
 
   useEffect(() => {
-    // 모달이 열릴 때 body의 스크롤을 막습니다.
+    if (cast && director && genres && runtime && productionCompanies) {
+      setIsLoading(false);
+    }
+  }, [cast, director, genres, runtime, productionCompanies]);
+
+  useEffect(() => {
     document.body.style.overflow = 'hidden';
     
-    // 컴포넌트가 언마운트될 때 (모달이 닫힐 때) body의 스크롤을 다시 활성화합니다.
+    const handleEsc = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleEsc);
+
     return () => {
       document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleEsc);
     };
-  }, []);
+  }, [onClose]);
+
+  useEffect(() => {
+    const fetchKeywords = async () => {
+      try {
+        const response = await api.get(`/api/movie/${movie.id}/keywords`);
+        setKeywords(response.data.keywords);
+      } catch (error) {
+        console.error("Error fetching keywords:", error);
+      }
+    };
+  
+    fetchKeywords();
+  }, [movie.id]);
+
+  const handleGenreClick = useCallback((genreId, genreName) => {
+    if (typeof onGenreClick === 'function') {
+      onGenreClick(genreId, genreName);
+    }
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+    onClose();
+  }, [onGenreClick, clearSearchValue, onClose]);
+
+  const handleKeywordClick = useCallback((keyword) => {
+    if (typeof onKeywordClick === 'function') {
+      onKeywordClick(keyword);
+    }
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+    onClose();
+  }, [onKeywordClick, clearSearchValue, onClose]);
 
   if (!movie) return null;
 
@@ -114,17 +209,24 @@ const MovieModal = ({ movie, onClose }) => {
       <ModalContent onClick={e => e.stopPropagation()}>
         <CloseButton onClick={onClose}><FaTimes /></CloseButton>
         {isLoading ? (
-          <p>로딩 중...</p>
+          <LoadingOverlay>
+            <LoadingSpinner />
+          </LoadingOverlay>
         ) : error ? (
           <p>{error}</p>
         ) : (
           <>
-            <PosterImage src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
-
+            {movie.poster_path ? (
+              <PosterImage src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} />
+            ) : (
+              <NoPosterImage>
+                <div>No</div>
+                <div>Poster</div>
+                <div>Image</div>
+              </NoPosterImage>
+            )}
             <MovieInfo>
-
               <TitleSection title={movie.title} />
-
               <ContentSection 
                 movie={movie}
                 director={director}
@@ -134,8 +236,12 @@ const MovieModal = ({ movie, onClose }) => {
                 productionCompanies={productionCompanies}
                 trailerId={trailerId}
                 setShowTrailer={setShowTrailer}
+                onKeywordClick={handleKeywordClick}
+                onGenreClick={handleGenreClick}
+                keywords={keywords}
+                setKeywords={setKeywords}
+                clearSearchValue={clearSearchValue}
               />
-
               <ReviewSection 
                 reviews={reviews}
                 rating={rating}
@@ -150,14 +256,13 @@ const MovieModal = ({ movie, onClose }) => {
                 allStars={allStars}
               />
             </MovieInfo>
-          </>
+            </>
         )}
       </ModalContent>
 
       {showTrailer && trailerId && (
         <YoutubeIframe videoId={trailerId} onClose={() => setShowTrailer(false)} />
       )}
-
     </ModalOverlay>
   );
 };

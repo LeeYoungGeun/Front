@@ -26,28 +26,29 @@ const SearchInput = styled.input`
   }
 `;
 
-function SearchInputComponent(){
-
-    const [inputValue, setSearchInputValue] = useState('');
+function SearchInputComponent({ searchValue, setSearchValue, clearSearchValue }) {
     const navigate = useNavigate();
 
     const handleChange = (event) => {
-        setSearchInputValue(event.target.value);
+        setSearchValue(event.target.value);
     }
 
     const handleKeyPress = (event) => {
         if(event.key === 'Enter'){
-            navigate(`/search?searchParam=${inputValue}`);
-            setSearchInputValue('');
+            performSearch();
         }
     }
 
     const handleSearchClick = () => {
-        if(inputValue !== ''){
-            navigate(`/search?searchParam=${inputValue}`);
-            setSearchInputValue('');
-        }else{
-            alert("검색어를 입력하세요.")
+        performSearch();
+    };
+
+    const performSearch = () => {
+        if(searchValue !== ''){
+            navigate(`/search?searchParam=${searchValue}`);
+            clearSearchValue();
+        } else {
+            alert("타이틀을 입력해 주세요.");
         }
     };
 
@@ -55,13 +56,14 @@ function SearchInputComponent(){
         <>
             <SearchInput
                 type="text"
+                value={searchValue}
                 onChange={handleChange}
                 onKeyPress={handleKeyPress}
+                placeholder="타이틀을 입력해 주세요."
             />
             <SearchIcon onClick={handleSearchClick} />
         </>
     );
-
 }
 
 export default SearchInputComponent;
