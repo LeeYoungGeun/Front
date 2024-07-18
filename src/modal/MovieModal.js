@@ -182,12 +182,25 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
     fetchKeywords();
   }, [movie.id]);
 
+  const handleGenreClick = useCallback((genreId, genreName) => {
+    if (typeof onGenreClick === 'function') {
+      onGenreClick(genreId, genreName);
+    }
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+    onClose();
+  }, [onGenreClick, clearSearchValue, onClose]);
+
   const handleKeywordClick = useCallback((keyword) => {
     if (typeof onKeywordClick === 'function') {
       onKeywordClick(keyword);
-      onClose();
     }
-  }, [onKeywordClick, onClose]);
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+    onClose();
+  }, [onKeywordClick, clearSearchValue, onClose]);
 
   if (!movie) return null;
 
@@ -224,12 +237,10 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
                 trailerId={trailerId}
                 setShowTrailer={setShowTrailer}
                 onKeywordClick={handleKeywordClick}
-                onGenreClick={(genreId, genreName) => {
-                  onGenreClick(genreId, genreName);
-                  onClose();
-                }}
+                onGenreClick={handleGenreClick}
                 keywords={keywords}
                 setKeywords={setKeywords}
+                clearSearchValue={clearSearchValue}
               />
               <ReviewSection 
                 reviews={reviews}

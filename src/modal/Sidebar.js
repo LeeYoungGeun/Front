@@ -11,7 +11,7 @@ const SidebarOverlay = styled.div`
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1010;
   display: ${props => props.isOpen ? 'block' : 'none'};
 `;
 
@@ -24,10 +24,10 @@ const SidebarContent = styled.aside`
   background: #1a1a1a;
   color: #fff;
   transition: left 0.3s ease-in-out;
-  z-index: 1000;
+  z-index: 1011;
   overflow-y: auto;
   box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-  padding-top: 77px;
+
 `;
 
 const CloseButton = styled.button`

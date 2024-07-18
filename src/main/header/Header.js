@@ -76,6 +76,7 @@ const SidebarToggle = styled.button`
   cursor: pointer;
   padding: 10px;
   margin-right: 10px;
+  z-index: 1000;
 
   &:hover {
     color: red;

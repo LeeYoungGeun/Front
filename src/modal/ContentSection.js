@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import { FaPlay } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import api from '../Member/api';
+import axios from 'axios';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
@@ -67,6 +68,7 @@ const GenreList = styled.ul`
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
 `;
 
 const GenreItem = styled.li`
@@ -161,37 +163,56 @@ const ContentSection = ({
   trailerId, 
   setShowTrailer,
   onKeywordClick,
-  onGenreClick
+  onGenreClick,
+  clearSearchValue
 }) => {
   const [showFullOverview, setShowFullOverview] = useState(false);
   const [keywords, setKeywords] = useState([]);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876'; // API 키를 환경 변수로 관리하는 것이 좋습니다
 
   const truncateOverview = (text, maxLength) => {
     if (text.length <= maxLength) return text;
     return text.slice(0, maxLength);
   };
 
-  const handleGenreClick = (genreId, genreName) => {
-    onGenreClick(genreId, genreName);
-  };
-
-  const handleKeywordClick = (keyword) => {
-    onKeywordClick(keyword);
-  };
-
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
-        const response = await api.get(`/api/movie/${movie.id}/keywords`);
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}/keywords`, {
+          params: {
+            api_key: API_KEY,
+          }
+        });
         setKeywords(response.data.keywords);
+        setError(null);
       } catch (error) {
         console.error("Error fetching keywords:", error);
+        setError("키워드를 불러오는 데 실패했습니다.");
       }
     };
-  
     fetchKeywords();
   }, [movie.id]);
+
+  const handleGenreClick = (genreId, genreName) => {
+    if (typeof onGenreClick === 'function') {
+      onGenreClick(genreId, genreName);
+    }
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+  };
+
+  const handleKeywordClick = (keyword) => {
+    if (typeof onKeywordClick === 'function') {
+      onKeywordClick(keyword);
+    }
+    if (typeof clearSearchValue === 'function') {
+      clearSearchValue();
+    }
+  };
 
   return (
     <Wrapper>
@@ -260,19 +281,22 @@ const ContentSection = ({
         ))}
       </CastList>
 
-      <KeywordList>
-        키워드:
-        {keywords.slice(0, 10).map((keyword, index, array) => (
-          <KeywordItem 
-            key={keyword.id} 
-            onClick={() => handleKeywordClick(keyword.name)}
-          >
-            {keyword.name}
-            {index < array.length - 1 ? ',' : ''}
-          </KeywordItem>
-        ))}
-      </KeywordList>
-
+      {error ? (
+        <p>{error}</p>
+      ) : (
+        <KeywordList>
+          키워드:
+          {keywords.slice(0, 10).map((keyword, index, array) => (
+            <KeywordItem 
+              key={keyword.id} 
+              onClick={() => handleKeywordClick(keyword.name)}
+            >
+              {keyword.name}
+              {index < array.length - 1 ? ',' : ''}
+            </KeywordItem>
+          ))}
+        </KeywordList>
+      )}
     </Wrapper>
   );
 };
