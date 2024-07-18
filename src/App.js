@@ -48,7 +48,7 @@ function App() {
         </Route>
         <Route path='/boardread/:paramBno' element={<BoardRead />} />
         <Route path='/boardcreate' element={<BoardCreate />}></Route>
-        <Route path='/boardupdate' element={<BoardUpdate />}></Route>
+        <Route path='/boardupdate/:paramBno' element={<BoardUpdate />}></Route>
         <Route path='/checkpw' element={<Remove />} />
         <Route path='*' element={<NotFound />} />
 
