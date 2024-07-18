@@ -7,7 +7,7 @@ const useTrailer = (movieId) => {
   useEffect(() => {
     const fetchTrailer = async () => {
       try {
-        const apiKey = '1b13edfe5dc42a52c844089c69230c8f';
+        const apiKey = 'c74603ff98c5e43ed99e1ed37812c876';
         const response = await fetch(
           `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`
         );

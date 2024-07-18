@@ -1,6 +1,6 @@
 import './App.css';
-import React, { useEffect } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { MainContainer } from './main/Main';
 import Header from './main/header/Header';
 import Body from './main/body/Body';
@@ -19,11 +19,21 @@ import BoardCreate from './board/BoardCreate';
 import BoardUpdate from './board/BoardUpdate';
 
 import NotFound from './error/NotFound';
+import Sidebar from './modal/Sidebar';
 
 
 function App() {
   const [cookies, setCookie] = useCookies(['accessToken']);
+  const [searchValue, setSearchValue] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
 
+  const clearSearchValue = () => {
+    setSearchValue('');
+  };
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  
   useEffect(() => {
     //토큰값 가져옴.
     const accessToken = cookies.accessToken;
@@ -33,12 +43,28 @@ function App() {
       setAuthToken(accessToken);
     }
   }, [cookies]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
   return (
     <MainContainer color='black'>
-      <Header/>
+      <Header 
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        clearSearchValue={clearSearchValue}
+        toggleSidebar={toggleSidebar}
+      />
       <Routes>
         <Route path='/' element={<Body />} /> 
-        <Route path='/search' element={<SearchResultList />} /> 
+        <Route path='/search' element={
+          <SearchResultList               
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+            clearSearchValue={clearSearchValue}
+          />} 
+        /> 
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/modify' element={<Modify />} />
@@ -54,6 +80,11 @@ function App() {
 
       </Routes>
       <Footer/>
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={() => setIsSidebarOpen(false)}
+        clearSearchValue={clearSearchValue}
+      />
     </MainContainer>
   );
 }

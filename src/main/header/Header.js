@@ -1,7 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
-import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import PropTypes from 'prop-types';
 import { MainHeader } from "../Main";
 import SearchInputComponent from "../body/SearchInputComponent";
 
@@ -22,15 +23,6 @@ const MainHeaderSearchArea = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-const SearchBar = () => {
-  return (
-    <SearchInputComponent 
-      type="text" 
-      placeholder="검색어를 입력해 주세요." 
-    />
-  );
-};
 
 const MainHeaderButtonArea = styled.div`
   width: 20%;
@@ -70,20 +62,57 @@ const Button = styled.button`
     padding: 4px 8px;
   }
 
-  /* 버튼이 줄바꿈되지 않도록 설정 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
 `;
 
-function Header() {
+const SidebarToggle = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 10px;
+  z-index: 1000;
+
+  &:hover {
+    color: red;
+  }
+`;
+
+function Header({ toggleSidebar }) {
   const [cookies, setCookie, removeCookie] = useCookies(['accessToken', 'refreshToken']);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
   const navigate = useNavigate();
 
+  const clearSearchValue = () => {
+    setSearchValue('');
+  };
+
+  const handleLogoClick = () => {
+    clearSearchValue();
+    navigate('/');
+  };
+
+  const handleLogout = () => {
+    try {
+      removeCookie('accessToken', { path: '/' });
+      removeCookie('refreshToken', { path: '/' });
+      setIsAuthenticated(false);
+      navigate('/');
+      alert("로그아웃 되었습니다.");
+    } catch (error) {
+      console.error("로그아웃 중 오류 발생:", error);
+      alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  };
+
   useEffect(() => {
-    console.log("쿠키 확인:", cookies.accessToken); // 쿠키 값을 확인하기 위해 콘솔에 출력
+    console.log("쿠키 확인:", cookies.accessToken);
     if (cookies.accessToken) {
       setIsAuthenticated(true);
     } else {
@@ -91,34 +120,36 @@ function Header() {
     }
   }, [cookies.accessToken]);
 
-  const handleLogout = () => {
-    removeCookie('accessToken', { path: '/' });
-    removeCookie('refreshToken', { path: '/' });
-    setIsAuthenticated(false);
-    navigate('/');
-    alert("로그아웃 되었습니다.");
-  };
-
   return (
     <MainHeader>
+      <SidebarToggle onClick={toggleSidebar} aria-label="사이드바 열기">
+        ☰
+      </SidebarToggle>
+
       <MainHeaderLogoArea>
-        <Link to="/">TFT</Link>
+        <div onClick={handleLogoClick}>TFT</div>
       </MainHeaderLogoArea>
+
       <MainHeaderSearchArea>
-        <SearchBar />
+        <SearchInputComponent 
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
+          clearSearchValue={clearSearchValue}
+        />
       </MainHeaderSearchArea>
+
       <MainHeaderButtonArea>
         {isAuthenticated ? (
           <>
-            <Button onClick={handleLogout}>로그아웃</Button>
+            <Button onClick={handleLogout} aria-label="로그아웃">로그아웃</Button>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="mypage"><Button>내계정</Button></Link>
+            <Link to="/mypage"><Button aria-label="내계정">내계정</Button></Link>
           </>
         ) : (
           <>
-            <Link to="/login"><Button>로그인</Button></Link>
+            <Link to="/login"><Button aria-label="로그인">로그인</Button></Link>
             &nbsp;&nbsp;&nbsp;&nbsp;
-            <Link to="/signup"><Button>회원가입</Button></Link>
+            <Link to="/signup"><Button aria-label="회원가입">회원가입</Button></Link>
           </>
         )}
         &nbsp;&nbsp;&nbsp;&nbsp;
@@ -128,4 +159,11 @@ function Header() {
   );
 }
 
-export default Header;
+Header.propTypes = {
+  searchValue: PropTypes.string.isRequired,
+  setSearchValue: PropTypes.func.isRequired,
+  clearSearchValue: PropTypes.func.isRequired,
+  toggleSidebar: PropTypes.func.isRequired,
+};
+
+export default React.memo(Header);

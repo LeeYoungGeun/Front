@@ -28,17 +28,17 @@ const MainHeader = styled.div`
 const MainBody = styled.div`
   flex: 1;
   padding-top: 8vh; // margin-top 대신 padding-top 사용
-  font-family: bold;
+  font-weight: bold;
 `;
 
 //footer
 const MainFooter = styled.div`
   height: 18vh;
   width: 100%;
-  margin-left: 2em;
   display: flex;
   align-items: center;
-  font-size: 1.2em;
+  font-size: 1em;
+  justify-content: center;
 `;
 
 export {
