@@ -69,6 +69,12 @@ const LoadingMessage = styled.p`
   margin-top: 20px;
 `;
 
+const LoadingEndMessage = styled.p`
+  text-align: center;
+  font-size: 1.2em;
+  margin-top: 20px;
+`;
+
 // 이미지 베이스 URL
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 
@@ -304,8 +310,10 @@ function SearchResultList({ clearSearchValue }) {
             <LoadingMessage>추가 결과를 로딩 중입니다...</LoadingMessage>
           </>
         )}
+        <LoadingEndMessage>
         {!loading && !hasMore && results.length > 0 && <p>모든 결과를 불러왔습니다.</p>}
         {!loading && results.length === 0 && <p>검색 결과가 없습니다.</p>}
+        </LoadingEndMessage>
       </SearchResultListAreaStyle>
       {selectedMovie && (
         <MovieModal 
