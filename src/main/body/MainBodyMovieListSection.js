@@ -60,15 +60,10 @@ const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
 // Access Token Auth
 const cookies = new Cookies();
 
-const getCookie = () => {
-  console.log(cookies.get("accessToken"));
-  return cookies.get("accessToken");
-};
-
 const getAuthHeaders = () => {
   return {
     accept: 'application/json',
-    Authorization: `Bearer ${getCookie()}`
+    Authorization: `Bearer ${cookies.get("accessToken")}`
   };
 };
 

@@ -4,10 +4,7 @@ import api from '../Member/api';
 
 const cookies = new Cookies();
 
-const getCookie = () => {
-  console.log(cookies.get("accessToken"));
-  return cookies.get("accessToken");
-}
+console.log('token' , cookies.get("accessToken"));
 
 const useReviews = (movie_id, movie_title) => {
   const [rating, setRating] = useState(0);
@@ -37,7 +34,7 @@ const useReviews = (movie_id, movie_title) => {
       const response = await api.post('/api/review/listOfReviewPaginated', requestData, {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getCookie()}`
+          'Authorization': `Bearer ${cookies.get("accessToken")}`
         }
       });
 
@@ -75,40 +72,45 @@ const useReviews = (movie_id, movie_title) => {
   }, [movie_id]);
 
   const handleSubmitReview = async () => {
-    if (review.trim() !== '') {
-      setReviews([...reviews, { text: review, rating, user }]);
-      setReview('');
-      setRating(0);
+    //로그인되기 전이면
+    if(cookies.get("accessToken") !== undefined){
+      if (review.trim() !== '') {
+        setReviews([...reviews, { text: review, rating, user }]);
+        setReview('');
+        setRating(0);
 
-      try {
-        const movieResponse = await api.post('/api/movie/register', {
-          "movie_id": movie_id,
-          "movie_title": movie_title
-        }, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getCookie()}`
-          }
-        });
-
-        if (movieResponse.data.result === movie_id) {
-          await api.post('/api/review/register', {
+        try {
+          const movieResponse = await api.post('/api/movie/register', {
             "movie_id": movie_id,
-            "review_text": review,
-            "review_star": rating
+            "movie_title": movie_title
           }, {
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${getCookie()}`
+              'Authorization': `Bearer ${cookies.get("accessToken")}`
             }
           });
-        } else {
-          alert("영화 정보가 일치하지 않습니다.");
+
+          if (movieResponse.data.result === movie_id) {
+            await api.post('/api/review/register', {
+              "movie_id": movie_id,
+              "review_text": review,
+              "review_star": rating
+            }, {
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${cookies.get("accessToken")}`
+              }
+            });
+          } else {
+            alert("영화 정보가 일치하지 않습니다.");
+          }
+        } catch (error) {
+          console.error('Error submitting review:', error);
+          setError('Error submitting review. Please try again later.');
         }
-      } catch (error) {
-        console.error('Error submitting review:', error);
-        setError('Error submitting review. Please try again later.');
       }
+    }else{
+      alert("login 해주세요");
     }
   };
 
