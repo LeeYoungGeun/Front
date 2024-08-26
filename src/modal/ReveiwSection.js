@@ -1,5 +1,5 @@
-import React, { useCallback, useRef } from 'react';
-import { FaStar } from 'react-icons/fa';
+import React, { useCallback, useRef, useState } from 'react';
+import { FaStar, FaEdit, FaTrash } from 'react-icons/fa';
 import styled, { css, keyframes } from 'styled-components';
 
 const scrollbarStyle = css`
@@ -107,6 +107,20 @@ const LoadingSpinner = styled.div`
   margin: 10px auto;
 `;
 
+const ActionButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+`;
+
+const ActionButton = styled.button`
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+`;
+
 const ReviewSection = ({ 
   reviews, 
   rating, 
@@ -118,9 +132,14 @@ const ReviewSection = ({
   loading,
   hasMore,
   total,
-  allStars
-
+  allStars,
+  handleEditReview,
+  handleDeleteReview
 }) => {
+  const [editingStates, setEditingStates] = useState({});
+  const [editingReview, setEditingReview] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [editRating, setEditRating] = useState(0);
 
     const handleRating = (value) => setRating(value);
     const handleReviewChange = (e) => setReview(e.target.value);
@@ -137,57 +156,124 @@ const ReviewSection = ({
       if (node) observer.current.observe(node);
     }, [loading, hasMore, fetchReviews]);
 
+    const startEditing = (reviewId) => {
+      setEditingStates(prev => ({
+        ...prev,
+        [reviewId]: {
+          isEditing: true,
+          text: reviews.find(r => r.review_id === reviewId).text,
+          rating: reviews.find(r => r.review_id === reviewId).rating
+        }
+      }));
+    };
+  
+    const cancelEditing = (reviewId) => {
+      setEditingStates(prev => ({
+        ...prev,
+        [reviewId]: { isEditing: false, text: '', rating: 0 }
+      }));
+    };
+  
+    const handleEditTextChange = (reviewId, newText) => {
+      setEditingStates(prev => ({
+        ...prev,
+        [reviewId]: { ...prev[reviewId], text: newText }
+      }));
+    };
+  
+    const handleEditRatingChange = (reviewId, newRating) => {
+      setEditingStates(prev => ({
+        ...prev,
+        [reviewId]: { ...prev[reviewId], rating: newRating }
+      }));
+    };
+  
+    const submitEdit = (reviewId) => {
+      const { text, rating } = editingStates[reviewId];
+      handleEditReview(reviewId, text, rating);
+      cancelEditing(reviewId);
+    };
 
     console.log('Rendering reviews:', reviews);
     console.log("allStars" + allStars);
     console.log("total" + total);
-
 
     return (
       <StyledReviewSection>
         <ReviewHeader>
           <MovieReview>한 줄 리뷰</MovieReview>
           <MovieReviewCount>총 {total}건 | 평점 {total > 0 ? (allStars / total).toFixed(1) : '0'}</MovieReviewCount>
-      </ReviewHeader>  
+        </ReviewHeader>  
 
-      <StarRating>
-          {[...Array(5)].map((_, index) => (
-          <FaStar
-              key={index}
-              color={index < rating ? "#ffc107" : "#e4e5e9"}
-              onClick={() => handleRating(index + 1)}
-              style={{ cursor: 'pointer' }}
-          />
-          ))}
-      </StarRating>
+        <StarRating>
+            {[...Array(5)].map((_, index) => (
+            <FaStar
+                key={index}
+                color={index < rating ? "#ffc107" : "#e4e5e9"}
+                onClick={() => handleRating(index + 1)}
+                style={{ cursor: 'pointer' }}
+            />
+            ))}
+        </StarRating>
 
-      <ReviewInputContainer>
-          <ReviewInput 
-          type="text" 
-          placeholder="리뷰를 작성해주세요" 
-          value={review}
-          onChange={handleReviewChange}
-          />
+        <ReviewInputContainer>
+            <ReviewInput 
+            type="text" 
+            placeholder="리뷰를 작성해주세요" 
+            value={review}
+            onChange={handleReviewChange}
+            />
 
-          <SubmitReview onClick={handleSubmitReview}>댓글</SubmitReview>
-      </ReviewInputContainer>
+            <SubmitReview onClick={handleSubmitReview}>댓글</SubmitReview>
+        </ReviewInputContainer>
 
-      <ReviewList>
+        <ReviewList>
           {reviews.map((item, index) => (
             <ReviewItem 
-              key={item.id || index} 
+              key={item.review_id || index} 
               ref={index === reviews.length - 1 ? lastReviewElementRef : null}
             >
-              {[...Array(5)].map((_, i) => (
-                <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
-              ))}
-              <div>작성자 : {item.user}</div>
-              {' '}{item.text}
+              {editingStates[item.review_id]?.isEditing ? (
+                <>
+                  <StarRating>
+                    {[...Array(5)].map((_, i) => (
+                      <FaStar
+                        key={i}
+                        color={i < editingStates[item.review_id].rating ? "#ffc107" : "#e4e5e9"}
+                        onClick={() => handleEditRatingChange(item.review_id, i + 1)}
+                        style={{ cursor: 'pointer' }}
+                      />
+                    ))}
+                  </StarRating>
+                  <ReviewInput 
+                    type="text" 
+                    value={editingStates[item.review_id].text}
+                    onChange={(e) => handleEditTextChange(item.review_id, e.target.value)}
+                  />
+                  <ActionButtons>
+                    <ActionButton onClick={() => submitEdit(item.review_id)}>저장</ActionButton>
+                    <ActionButton onClick={() => cancelEditing(item.review_id)}>취소</ActionButton>
+                  </ActionButtons>
+                </>
+              ) : (
+                <>
+                  {[...Array(5)].map((_, i) => (
+                    <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
+                  ))}
+                  <div>작성자 : {item.user}</div>
+                  {' '}{item.text}
+                  <ActionButtons>
+                    <ActionButton onClick={() => startEditing(item.review_id)}><FaEdit /></ActionButton>
+                    <ActionButton onClick={() => handleDeleteReview(item.review_id)}><FaTrash /></ActionButton>
+                  </ActionButtons>
+                </>
+              )}
             </ReviewItem>
           ))}
           {loading && <LoadingSpinner />}
           {!loading && !hasMore && <div></div>}
         </ReviewList>
+
       </StyledReviewSection>
     );
 };
