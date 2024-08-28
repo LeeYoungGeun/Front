@@ -114,7 +114,75 @@ const useReviews = (movie_id, movie_title) => {
     }
   };
 
-  return { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStars, error };
+  const handleEditReview = async (reviewId, newText, newRating) => {
+    if(cookies.get("accessToken") !== undefined){
+      try {
+        const response = await api.put('/api/review/modify', {
+          review_id: reviewId,
+          review_text: newText,
+          review_star: newRating,
+          movie_id: movie_id
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${cookies.get("accessToken")}`
+          }
+        });
+
+        if (response.data.result === 'success') {
+          setReviews(prevReviews => 
+            prevReviews.map(review => 
+              review.review_id === reviewId 
+                ? { ...review, text: newText, rating: newRating }
+                : review
+            )
+          );
+          // 전체 별점 업데이트
+          setAllStars(prevAllStars => prevAllStars - review.rating + newRating);
+        } else {
+          setError('Failed to update review in the database.');
+        }
+      } catch (error) {
+        console.error('Error editing review:', error);
+        setError('Error editing review. Please try again later.');
+      }
+    } else {
+      alert("로그인 해주세요");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if(cookies.get("accessToken") !== undefined){
+      try {
+        const response = await api.delete(`/api/review/${reviewId}`, {
+          headers: {
+            'Authorization': `Bearer ${cookies.get("accessToken")}`
+          }
+        });
+
+        if (response.data.result === 'success') {
+          const deletedReview = reviews.find(review => review.review_id === reviewId);
+          setReviews(prevReviews => prevReviews.filter(review => review.review_id !== reviewId));
+          setTotal(prevTotal => prevTotal - 1);
+          // 전체 별점 업데이트
+          setAllStars(prevAllStars => prevAllStars - deletedReview.rating);
+        } else {
+          setError('Failed to delete review from the database.');
+        }
+      } catch (error) {
+        console.error('Error deleting review:', error);
+        setError('Error deleting review. Please try again later.');
+      }
+    } else {
+      alert("로그인 해주세요");
+    }
+  };
+
+  return { 
+    rating, setRating, review, setReview, reviews, 
+    handleSubmitReview, fetchReviews, loading, hasMore, 
+    total, allStars, error, handleEditReview, handleDeleteReview 
+  };
 };
 
 export default useReviews;
