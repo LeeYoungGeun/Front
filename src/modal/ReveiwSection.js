@@ -18,8 +18,9 @@ const scrollbarStyle = css`
 const StyledReviewSection = styled.div`
   margin-bottom: 10px;
   margin-top: 20px;
-  max-height: 40%;
-  width: auto;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
   ${scrollbarStyle}
 `;
 
@@ -79,7 +80,7 @@ const ReviewList = styled.ul`
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.1); 
   border-radius: 5px;
-  max-height: 60%;
+  flex-grow: 1; // 남은 공간을 모두 차지하도록 하는 설정
   overflow-y: auto;
   ${scrollbarStyle}
 `;
@@ -173,18 +174,22 @@ const ReviewSection = ({
       </ReviewInputContainer>
 
       <ReviewList>
-          {reviews.map((item, index) => (
-            <ReviewItem 
-              key={item.id || index} 
-              ref={index === reviews.length - 1 ? lastReviewElementRef : null}
-            >
-              {[...Array(5)].map((_, i) => (
-                <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
-              ))}
-              <div>작성자 : {item.user}</div>
-              {' '}{item.text}
-            </ReviewItem>
-          ))}
+          {reviews.length > 0 ? (
+            reviews.map((item, index) => (
+              <ReviewItem 
+                key={item.id || index} 
+                ref={index === reviews.length - 1 ? lastReviewElementRef : null}
+              >
+                {[...Array(5)].map((_, i) => (
+                  <FaStar key={i} color={i < item.rating ? "#ffc107" : "#e4e5e9"} />
+                ))}
+                <div>작성자 : {item.user}</div>
+                {' '}{item.text}
+              </ReviewItem>
+            ))
+          ) : (
+            <div style={{ textAlign: 'center', padding: '20px' }}>아직 리뷰가 없습니다.</div>
+          )}  
           {loading && <LoadingSpinner />}
           {!loading && !hasMore && <div></div>}
         </ReviewList>

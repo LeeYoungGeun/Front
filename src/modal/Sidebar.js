@@ -12,12 +12,13 @@ const SidebarOverlay = styled.div`
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1010;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+
+  display: ${props => props.$isOpen ? 'block' : 'none'};
 `;
 
 const SidebarContent = styled.aside`
   position: fixed;
-  left: ${props => props.isOpen ? '0' : '-500px'};
+  left: ${props => props.$isOpen ? '0' : '-500px'};
   top: 0;
   bottom: 0;
   width: 500px;
@@ -27,7 +28,6 @@ const SidebarContent = styled.aside`
   z-index: 1011;
   overflow-y: auto;
   box-shadow: 2px 0 5px rgba(0,0,0,0.5);
-
 `;
 
 const CloseButton = styled.button`
@@ -183,42 +183,46 @@ const Sidebar = ({ isOpen, onClose, clearSearchValue }) => {
   };
 
   return (
-    <SidebarOverlay isOpen={isOpen} onClick={onClose}>
-      <SidebarContent isOpen={isOpen} onClick={e => e.stopPropagation()}>
-        <CloseButton onClick={onClose}><FaTimes /></CloseButton>
-        <Logo>
-          <a href="/">🍿TFT<span style={{ color: '#e50914' }}>DB🍿</span></a>
-        </Logo>
+    <>
+      {isOpen && (
+        <SidebarOverlay $isOpen={isOpen} onClick={onClose}>
+          <SidebarContent $isOpen={isOpen} onClick={e => e.stopPropagation()}>
+            <CloseButton onClick={onClose}><FaTimes /></CloseButton>
+            <Logo>
+              <a href="/">🍿TFT<span style={{ color: '#e50914' }}>DB🍿</span></a>
+            </Logo>
 
-        {error && <ErrorMessage>{error}</ErrorMessage>}
+            {error && <ErrorMessage>{error}</ErrorMessage>}
 
-        <NavSection>
-          <NavTitle><FaFilm /> Genres</NavTitle>
-          <NavList>
-            {genres.map(genre => (
-              <NavItem key={genre.id}>
-                <NavLink href="#" onClick={(e) => { e.preventDefault(); handleGenreClick(genre.id, genre.name); }}>
-                  {genre.name}
-                </NavLink>
-              </NavItem>
-            ))}
-          </NavList>
-        </NavSection>
+            <NavSection>
+              <NavTitle><FaFilm /> Genres</NavTitle>
+              <NavList>
+                {genres.map(genre => (
+                  <NavItem key={genre.id}>
+                    <NavLink href="#" onClick={(e) => { e.preventDefault(); handleGenreClick(genre.id, genre.name); }}>
+                      {genre.name}
+                    </NavLink>
+                  </NavItem>
+                ))}
+              </NavList>
+            </NavSection>
 
-        <NavSection>
-          <NavTitle><FaTags /> Top 21's Keywords</NavTitle>
-          <NavList>
-            {keywords.map((keyword, index) => (
-              <NavItem key={index}>
-                <NavLink href="#" onClick={(e) => { e.preventDefault(); handleKeywordClick(keyword); }}>
-                  {keyword}
-                </NavLink>
-              </NavItem>
-            ))}
-          </NavList>
-        </NavSection>
-      </SidebarContent>
-    </SidebarOverlay>
+            <NavSection>
+              <NavTitle><FaTags /> Top 21's Keywords</NavTitle>
+              <NavList>
+                {keywords.map((keyword, index) => (
+                  <NavItem key={index}>
+                    <NavLink href="#" onClick={(e) => { e.preventDefault(); handleKeywordClick(keyword); }}>
+                      {keyword}
+                    </NavLink>
+                  </NavItem>
+                ))}
+              </NavList>
+            </NavSection>
+          </SidebarContent>
+        </SidebarOverlay>
+      )}
+    </>
   );
 };
 
