@@ -184,50 +184,61 @@ const MeetModal = ({ onClose }) => {
   );
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={e => e.stopPropagation()}>
-        <CloseButton onClick={onClose}><FaTimes /></CloseButton>
-        
-        <SearchBar>
-          <SearchInput 
-            type="text" 
-            placeholder="검색" 
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          <FaSearch style={{ marginRight: '10px' }} />
-          <Button onClick={handleRecruitmentClick}>모집하기</Button>
-        </SearchBar>
+    <>
+      <ModalOverlay onClick={onClose}>
+        <ModalContent onClick={e => e.stopPropagation()}>
+          <CloseButton onClick={onClose}><FaTimes /></CloseButton>
+          
+          <SearchBar>
+            <SearchInput 
+              type="text" 
+              placeholder="검색" 
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <FaSearch style={{ marginRight: '10px' }} />
+            <Button onClick={handleRecruitmentClick}>모집하기</Button>
+          </SearchBar>
 
-        <MeetingsGrid>
-          {filteredMeetings.map(meeting => (
-            <MeetItem key={meeting.meetId}>
-              <h3>{meeting.meetTitle}</h3>
-              <p>모집인원: {meeting.personnel}</p>
-              <p>모임시간: {new Date(meeting.meetTime).toLocaleString()}</p>
-              <Button onClick={() => handleApplyClick(meeting)}>신청하기</Button>
-            </MeetItem>
-          ))}
-        </MeetingsGrid>
+          <MeetingsGrid>
+            {filteredMeetings.map(meeting => (
+              <MeetItem key={meeting.meetId}>
+                <h3>{meeting.meetTitle}</h3>
+                <p>모집인원: {meeting.personnel}</p>
+                <p>모임시간: {new Date(meeting.meetTime).toLocaleString()}</p>
+                <Button onClick={() => handleApplyClick(meeting)}>신청하기</Button>
+              </MeetItem>
+            ))}
+          </MeetingsGrid>
+        </ModalContent>
+      </ModalOverlay>
 
-        {showRecruitmentModal && (
-          <RecruitmentModal 
-            onClose={() => setShowRecruitmentModal(false)}
-            onSubmit={handleRecruitmentSubmit}
-            userData={userData}
-          />
-        )}
+      {showRecruitmentModal && (
+        <ModalOverlay onClick={() => setShowRecruitmentModal(false)}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <RecruitmentModal 
+              show={showRecruitmentModal}
+              onClose={() => setShowRecruitmentModal(false)}
+              onSubmit={handleRecruitmentSubmit}
+              userData={userData}
+            />
+          </ModalContent>
+        </ModalOverlay>
+      )}
 
-        {showApplyModal && selectedMeeting && (
-          <ApplyModal
-            meeting={selectedMeeting}
-            onClose={() => setShowApplyModal(false)}
-            isLoggedIn={isLoggedIn}
-            userData={userData}
-          />
-        )}
-      </ModalContent>
-    </ModalOverlay>
+      {showApplyModal && selectedMeeting && (
+        <ModalOverlay onClick={() => setShowApplyModal(false)}>
+          <ModalContent onClick={e => e.stopPropagation()}>
+            <ApplyModal
+              meeting={selectedMeeting}
+              onClose={() => setShowApplyModal(false)}
+              isLoggedIn={isLoggedIn}
+              userData={userData}
+            />
+          </ModalContent>
+        </ModalOverlay>
+      )}
+    </>
   );
 };
 

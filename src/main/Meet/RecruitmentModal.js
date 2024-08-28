@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+import api from './api';
 import { FaTimes } from 'react-icons/fa';
+import styled from 'styled-components';
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -68,107 +69,181 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
+  margin-top: 10px;
 `;
 
-const RecruitmentModal = ({ onClose, onSubmit }) => {
+const ImagePreview = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 
-  
+  img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+`;
+
+const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken }) => {
   const [formData, setFormData] = useState({
     meetTitle: '',
+    meetWriter: '',
     meetContent: '',
-    personnel: 1,
+    personnel: '',
     meetTime: '',
-    movieTitle: '', // Add this field
+    images: []
   });
 
-  const handleChange = (e) => {
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  useEffect(() => {
+    if (authToken) {
+      api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+    }
+
+    if (editMode && meetNum) {
+      api.get(`/api/meet/read/${meetNum}`)
+        .then(response => {
+          const data = response.data;
+          setFormData({
+            meetTitle: data.meetTitle,
+            meetWriter: data.meetWriter,
+            meetContent: data.meetContent,
+            personnel: data.personnel,
+            meetTime: data.meetTime,
+            images: []
+          });
+
+          if (data.fileNames) {
+            const previews = data.fileNames.map(fileName => `/api/view/${fileName}`);
+            setImagePreviews(previews);
+          }
+        })
+        .catch(error => console.error("게시글 데이터를 가져오는데 실패했습니다.", error));
+    }
+  }, [editMode, meetNum, authToken]);
+
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: name === 'personnel' ? parseInt(value) : value
-    }));
+    setFormData({
+      ...formData,
+      [name]: value
+    });
   };
 
-  const [image, setImage] = useState(null);
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setFormData({
+      ...formData,
+      images: files
+    });
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const previews = files.map(file => URL.createObjectURL(file));
+    setImagePreviews(previews);
   };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formDataToSend = new FormData();
-    for (let key in formData) {
-      formDataToSend.append(key, formData[key]);
-    }
-    if (image) {
-      formDataToSend.append('image', image);
-    }
-    onSubmit(formDataToSend);
+
+  const handleSubmit = () => {
+    const data = new FormData();
+    Object.keys(formData).forEach(key => {
+      if (key !== 'images') {
+        data.append(key, formData[key]);
+      }
+    });
+
+    formData.images.forEach(image => {
+      data.append('images', image);
+    });
+
+    const url = editMode ? `/api/meet/modify/${meetNum}` : '/api/meet/register';
+    const method = editMode ? 'put' : 'post';
+
+    api({
+      method: method,
+      url: url,
+      data: data,
+    })
+    .then(response => {
+      console.log("폼 제출 성공", response.data);
+      onClose();
+    })
+    .catch(error => console.error("폼 제출에 실패했습니다.", error));
   };
+
+  if (!show) return null;
 
   return (
-    <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={e => e.stopPropagation()}>
+    <ModalOverlay>
+      <ModalContent>
         <CloseButton onClick={onClose}><FaTimes /></CloseButton>
-        <h2>모임 모집하기</h2>
-        <form onSubmit={handleSubmit}>
+        <h2>{editMode ? "게시글 수정" : "게시글 등록"}</h2>
         <InputGroup>
-          <label htmlFor="image">영화 포스터 (선택사항)</label>
-          <input
-            type="file"
-            id="image"
-            name="image"
-            onChange={handleImageChange}
-            accept="image/*"
+          <label htmlFor="meetTitle">제목</label>
+          <input 
+            id="meetTitle"
+            type="text" 
+            name="meetTitle" 
+            value={formData.meetTitle} 
+            onChange={handleInputChange} 
           />
         </InputGroup>
-          <InputGroup>
-            <label htmlFor="meetTitle">모임 제목</label>
-            <input
-              type="text"
-              id="meetTitle"
-              name="meetTitle"
-              value={formData.meetTitle}
-              onChange={handleChange}
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <label htmlFor="meetContent">모임 내용</label>
-            <textarea
-              id="meetContent"
-              name="meetContent"
-              value={formData.meetContent}
-              onChange={handleChange}
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <label htmlFor="personnel">모집 인원</label>
-            <input
-              type="number"
-              id="personnel"
-              name="personnel"
-              value={formData.personnel}
-              onChange={handleChange}
-              min="1"
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <label htmlFor="meetTime">모임 시간</label>
-            <input
-              type="datetime-local"
-              id="meetTime"
-              name="meetTime"
-              value={formData.meetTime}
-              onChange={handleChange}
-              required
-            />
-          </InputGroup>
-          <Button type="submit">모집 등록</Button>
-        </form>
+        <InputGroup>
+          <label htmlFor="meetWriter">작성자</label>
+          <input 
+            id="meetWriter"
+            type="text" 
+            name="meetWriter" 
+            value={formData.meetWriter} 
+            onChange={handleInputChange} 
+          />
+        </InputGroup>
+        <InputGroup>
+          <label htmlFor="meetContent">내용</label>
+          <textarea 
+            id="meetContent"
+            name="meetContent" 
+            value={formData.meetContent} 
+            onChange={handleInputChange} 
+          />
+        </InputGroup>
+        <InputGroup>
+          <label htmlFor="personnel">참여 인원</label>
+          <input 
+            id="personnel"
+            type="number" 
+            name="personnel" 
+            value={formData.personnel} 
+            onChange={handleInputChange} 
+          />
+        </InputGroup>
+        <InputGroup>
+          <label htmlFor="meetTime">모임 시간</label>
+          <input 
+            id="meetTime"
+            type="datetime-local" 
+            name="meetTime" 
+            value={formData.meetTime} 
+            onChange={handleInputChange} 
+          />
+        </InputGroup>
+        <InputGroup>
+          <label htmlFor="images">이미지 업로드</label>
+          <input 
+            id="images"
+            type="file" 
+            multiple 
+            onChange={handleFileChange} 
+          />
+        </InputGroup>
+        <ImagePreview>
+          {imagePreviews.map((src, index) => (
+            <img key={index} src={src} alt="미리보기" />
+          ))}
+        </ImagePreview>
+        <Button onClick={handleSubmit}>
+          {editMode ? "수정하기" : "등록하기"}
+        </Button>
       </ModalContent>
     </ModalOverlay>
   );
