@@ -142,9 +142,14 @@ const LoadingOverlay = styled.div`
 const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchValue }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { cast, director, genres, runtime, productionCompanies, error } = useMovieDetails(movie.id);
-  const { rating, setRating, review, setReview, reviews, handleSubmitReview, fetchReviews, loading, hasMore, total, allStars } = useReviews(movie.id, movie.title);
+  const { 
+    rating, setRating, review, setReview, reviews, 
+    handleSubmitReview, fetchReviews, loading, hasMore, 
+    total, allStars, handleEditReview, handleDeleteReview 
+  } = useReviews(movie.id, movie.title);
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
   const [keywords, setKeywords] = useState([]);
+  
 
   useEffect(() => {
     if (cast && director && genres && runtime && productionCompanies) {
@@ -242,7 +247,7 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
                 setKeywords={setKeywords}
                 clearSearchValue={clearSearchValue}
               />
-              <ReviewSection 
+             <ReviewSection 
                 reviews={reviews}
                 rating={rating}
                 setRating={setRating}
@@ -254,6 +259,8 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
                 hasMore={hasMore}
                 total={total}
                 allStars={allStars}
+                handleEditReview={handleEditReview}
+                handleDeleteReview={handleDeleteReview}
               />
             </MovieInfo>
             </>
