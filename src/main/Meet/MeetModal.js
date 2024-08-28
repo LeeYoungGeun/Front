@@ -141,9 +141,17 @@ const MeetModal = ({ onClose }) => {
   const fetchMeetings = async () => {
     try {
       const response = await api.get('/api/meet/list');
-      setMeetings(response.data);
+      console.log("API response:", response.data);  // 전체 응답 로깅
+  
+      if (response.data && Array.isArray(response.data.dtoList)) {
+        setMeetings(response.data.dtoList);
+      } else {
+        console.error('Unexpected data structure:', response.data);
+        setMeetings([]);
+      }
     } catch (error) {
       console.error('Error fetching meetings:', error);
+      setMeetings([]);
     }
   };
 
@@ -159,14 +167,10 @@ const MeetModal = ({ onClose }) => {
     }
   };
 
-  const handleRecruitmentSubmit = async (formData) => {
-    try {
-      await api.post('/api/meet/register', formData);
-      setShowRecruitmentModal(false);
+  const handleRecruitmentClose = (dataChanged = false) => {
+    setShowRecruitmentModal(false);
+    if (dataChanged) {
       fetchMeetings();
-    } catch (error) {
-      console.error('Error registering meeting:', error);
-      alert('모임 등록 중 오류가 발생했습니다.');
     }
   };
 
@@ -214,29 +218,20 @@ const MeetModal = ({ onClose }) => {
       </ModalOverlay>
 
       {showRecruitmentModal && (
-        <ModalOverlay onClick={() => setShowRecruitmentModal(false)}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            <RecruitmentModal 
-              show={showRecruitmentModal}
-              onClose={() => setShowRecruitmentModal(false)}
-              onSubmit={handleRecruitmentSubmit}
-              userData={userData}
-            />
-          </ModalContent>
-        </ModalOverlay>
+        <RecruitmentModal 
+          show={showRecruitmentModal}
+          onClose={handleRecruitmentClose}
+          userData={userData}
+        />
       )}
 
       {showApplyModal && selectedMeeting && (
-        <ModalOverlay onClick={() => setShowApplyModal(false)}>
-          <ModalContent onClick={e => e.stopPropagation()}>
-            <ApplyModal
-              meeting={selectedMeeting}
-              onClose={() => setShowApplyModal(false)}
-              isLoggedIn={isLoggedIn}
-              userData={userData}
-            />
-          </ModalContent>
-        </ModalOverlay>
+        <ApplyModal
+          meeting={selectedMeeting}
+          onClose={() => setShowApplyModal(false)}
+          isLoggedIn={isLoggedIn}
+          userData={userData}
+        />
       )}
     </>
   );

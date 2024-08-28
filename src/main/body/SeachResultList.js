@@ -69,7 +69,7 @@ const LoadingMessage = styled.p`
   margin-top: 20px;
 `;
 
-const LoadingEndMessage = styled.p`
+const LoadingEndMessage = styled.div`  // p를 div로 변경
   text-align: center;
   font-size: 1.2em;
   margin-top: 20px;
@@ -79,7 +79,7 @@ const LoadingEndMessage = styled.p`
 const baseImageUrl = 'https://image.tmdb.org/t/p/w500';
 
 // 환경 변수를 통한 API 키
-const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
 
 function SearchResultList({ clearSearchValue }) {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -311,8 +311,8 @@ function SearchResultList({ clearSearchValue }) {
           </>
         )}
         <LoadingEndMessage>
-        {!loading && !hasMore && results.length > 0 && <p>모든 결과를 불러왔습니다.</p>}
-        {!loading && results.length === 0 && <p>검색 결과가 없습니다.</p>}
+          {!loading && !hasMore && results.length > 0 && "모든 결과를 불러왔습니다."}
+          {!loading && results.length === 0 && "검색 결과가 없습니다."}
         </LoadingEndMessage>
       </SearchResultListAreaStyle>
       {selectedMovie && (

@@ -149,7 +149,7 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
   } = useReviews(movie.id, movie.title);
   const { showTrailer, setShowTrailer, trailerId } = useTrailer(movie.id);
   const [keywords, setKeywords] = useState([]);
-  
+  const [keywordsError, setKeywordsError] = useState(null);
 
   useEffect(() => {
     if (cast && director && genres && runtime && productionCompanies) {
@@ -177,10 +177,17 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
-        const response = await api.get(`/api/movie/${movie.id}/keywords`);
+        const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+        const response = await api.get(`https://api.themoviedb.org/3/movie/${movie.id}/keywords`,{
+          params: {
+            api_key: `${API_KEY}`,
+          }
+        });
         setKeywords(response.data.keywords);
+        setKeywordsError(null);  // 성공 시 에러를 null로 설정
       } catch (error) {
         console.error("Error fetching keywords:", error);
+        setKeywordsError("키워드를 불러오는 데 실패했습니다.");  // 에러 메시지 설정
       }
     };
   
@@ -219,6 +226,8 @@ const MovieModal = ({ movie, onClose, onGenreClick, onKeywordClick, clearSearchV
           </LoadingOverlay>
         ) : error ? (
           <p>{error}</p>
+        ) : keywordsError ? (
+          <p>{keywordsError}</p>
         ) : (
           <>
             {movie.poster_path ? (

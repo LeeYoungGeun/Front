@@ -102,7 +102,7 @@ const ErrorMessage = styled.div`
 `;
 
 const baseImageUrl = 'https://image.tmdb.org/t/p/original';
-const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876';
+const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
 
 function MainBodyRollingBanner({ clearSearchValue = () => {}, onKeywordClick = () => {} }) {
   const [popularMovies, setPopularMovies] = useState([]);
@@ -139,8 +139,8 @@ function MainBodyRollingBanner({ clearSearchValue = () => {}, onKeywordClick = (
   const handleKeywordClick = useCallback((keyword) => {
     setSelectedMovie(null);
     clearSearchValue();
-    onKeywordClick(keyword);
-  }, [clearSearchValue, onKeywordClick]);
+    navigate(`/search?keyword=${keyword}`);  // 이 부분을 수정
+  }, [clearSearchValue, navigate]);
 
   const handleMovieClick = useCallback((movie) => {
     setSelectedMovie(movie);
@@ -195,6 +195,7 @@ function MainBodyRollingBanner({ clearSearchValue = () => {}, onKeywordClick = (
           onClose={() => setSelectedMovie(null)}
           onGenreClick={handleGenreClick}
           onKeywordClick={handleKeywordClick}
+          clearSearchValue={clearSearchValue}  // 이 prop을 추가
         />
       )}
     </MainBodyRollingBannerAreaStyle>

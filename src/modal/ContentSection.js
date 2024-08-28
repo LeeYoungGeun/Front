@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../Member/api';
 import axios from 'axios';
 
+console.log('API KEY:', process.env.REACT_APP_TMDB_API_KEY);
+
 const scrollbarStyle = css`
   &::-webkit-scrollbar {
     width: 6px;
@@ -171,7 +173,7 @@ const ContentSection = ({
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  const API_KEY = 'c74603ff98c5e43ed99e1ed37812c876'; // API 키를 환경 변수로 관리하는 것이 좋습니다
+  const API_KEY = process.env.REACT_APP_TMDB_API_KEY; // API 키를 환경 변수로 관리하는 것이 좋습니다
 
   const truncateOverview = (text, maxLength) => {
     if (text.length <= maxLength) return text;
@@ -181,11 +183,14 @@ const ContentSection = ({
   useEffect(() => {
     const fetchKeywords = async () => {
       try {
+        const API_KEY = process.env.REACT_APP_TMDB_API_KEY;
+        console.log('Fetching keywords for movie ID:', movie.id);
         const response = await axios.get(`https://api.themoviedb.org/3/movie/${movie.id}/keywords`, {
           params: {
-            api_key: API_KEY,
+            api_key: `${API_KEY}`,
           }
         });
+        console.log('Keywords response:', response.data);
         setKeywords(response.data.keywords);
         setError(null);
       } catch (error) {
@@ -193,6 +198,7 @@ const ContentSection = ({
         setError("키워드를 불러오는 데 실패했습니다.");
       }
     };
+  
     fetchKeywords();
   }, [movie.id]);
 

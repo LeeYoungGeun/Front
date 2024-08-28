@@ -39,6 +39,19 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
+const ModalTitle = styled.h2`
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+`;
+
+const AuthorInfo = styled.p`
+  font-size: 14px;
+  color: #999;
+  margin-bottom: 15px;
+`;
+
 const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
@@ -57,7 +70,21 @@ const InputGroup = styled.div`
   }
 
   textarea {
-    min-height: 100px;
+    min-height: 150px;
+  }
+`;
+
+const MeetingTimeGroup = styled(InputGroup)`
+  flex-direction: row;
+  align-items: center;
+
+  label {
+    margin-right: 10px;
+    margin-bottom: 0;
+  }
+
+  input {
+    flex-grow: 1;
   }
 `;
 
@@ -69,7 +96,9 @@ const Button = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px;
+  width: 100px;
+  margin: 0 auto;
+  display: block;
 `;
 
 const ImagePreview = styled.div`
@@ -86,10 +115,15 @@ const ImagePreview = styled.div`
   }
 `;
 
-const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken }) => {
+const TextArea = styled.textarea`
+  min-height: 150px;
+  resize: none; // 사용자가 크기를 조절할 수 없게 합니다.
+`;
+
+const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken, userData }) => {
   const [formData, setFormData] = useState({
     meetTitle: '',
-    meetWriter: '',
+    meetWriter: userData ? userData.mnick : '', // mnick을 사용합니다.
     meetContent: '',
     personnel: '',
     meetTime: '',
@@ -123,7 +157,7 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
         })
         .catch(error => console.error("게시글 데이터를 가져오는데 실패했습니다.", error));
     }
-  }, [editMode, meetNum, authToken]);
+  }, [editMode, meetNum, authToken, userData]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -144,7 +178,7 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
     setImagePreviews(previews);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
       if (key !== 'images') {
@@ -159,16 +193,21 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
     const url = editMode ? `/api/meet/modify/${meetNum}` : '/api/meet/register';
     const method = editMode ? 'put' : 'post';
 
-    api({
-      method: method,
-      url: url,
-      data: data,
-    })
-    .then(response => {
+    try {
+      const response = await api({
+        method: method,
+        url: url,
+        data: data,
+      });
       console.log("폼 제출 성공", response.data);
       onClose();
-    })
-    .catch(error => console.error("폼 제출에 실패했습니다.", error));
+      // 여기에서 부모 컴포넌트에 데이터가 변경되었음을 알립니다.
+      if (typeof onClose === 'function') {
+        onClose(true); // true를 전달하여 데이터가 변경되었음을 알립니다.
+      }
+    } catch (error) {
+      console.error("폼 제출에 실패했습니다.", error);
+    }
   };
 
   if (!show) return null;
@@ -177,7 +216,8 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
     <ModalOverlay>
       <ModalContent>
         <CloseButton onClick={onClose}><FaTimes /></CloseButton>
-        <h2>{editMode ? "게시글 수정" : "게시글 등록"}</h2>
+        <ModalTitle>{editMode ? "모임 수정" : "모임 등록"}</ModalTitle>
+        <AuthorInfo>작성자: {formData.meetWriter}</AuthorInfo>
         <InputGroup>
           <label htmlFor="meetTitle">제목</label>
           <input 
@@ -188,27 +228,18 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
             onChange={handleInputChange} 
           />
         </InputGroup>
-        <InputGroup>
-          <label htmlFor="meetWriter">작성자</label>
+        <MeetingTimeGroup>
+          <label htmlFor="meetTime">모집 시간</label>
           <input 
-            id="meetWriter"
-            type="text" 
-            name="meetWriter" 
-            value={formData.meetWriter} 
+            id="meetTime"
+            type="datetime-local" 
+            name="meetTime" 
+            value={formData.meetTime} 
             onChange={handleInputChange} 
           />
-        </InputGroup>
+        </MeetingTimeGroup>
         <InputGroup>
-          <label htmlFor="meetContent">내용</label>
-          <textarea 
-            id="meetContent"
-            name="meetContent" 
-            value={formData.meetContent} 
-            onChange={handleInputChange} 
-          />
-        </InputGroup>
-        <InputGroup>
-          <label htmlFor="personnel">참여 인원</label>
+          <label htmlFor="personnel">모집 인원</label>
           <input 
             id="personnel"
             type="number" 
@@ -218,12 +249,11 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
           />
         </InputGroup>
         <InputGroup>
-          <label htmlFor="meetTime">모임 시간</label>
-          <input 
-            id="meetTime"
-            type="datetime-local" 
-            name="meetTime" 
-            value={formData.meetTime} 
+          <label htmlFor="meetContent">모임 내용</label>
+          <TextArea 
+            id="meetContent"
+            name="meetContent" 
+            value={formData.meetContent} 
             onChange={handleInputChange} 
           />
         </InputGroup>
@@ -242,7 +272,7 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken 
           ))}
         </ImagePreview>
         <Button onClick={handleSubmit}>
-          {editMode ? "수정하기" : "등록하기"}
+          {editMode ? "수정" : "등록"}
         </Button>
       </ModalContent>
     </ModalOverlay>
