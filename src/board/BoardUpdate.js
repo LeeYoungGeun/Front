@@ -1,33 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import './BoardRead.css';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import api from '../Member/api';
 
 function BoardUpdate() {
-
     const [dtoList, setDtoList] = useState({
         title: '',
         content: ''
-      });
-    const {paramBno} = useParams();
+    });
+    const { paramBno } = useParams();
     const navigate = useNavigate();
 
-    useEffect( () => {
+    useEffect(() => {
         const fetchBoardData = async (bno) => {
             try {
-              const response = await api.get(`/board/read/${bno}`, {
-              });
-              const data = response.data;
-        
-              console.log("data: ", data);
-              if (response.status === 200) {
-                setDtoList(data);
-                // setTotalPages(Math.ceil(response.data.total / response.data.size));
-              } else {
-                console.error("Expected an array but got:", data);
-              }
+                const response = await api.get(`/board/read/${bno}`);
+                const data = response.data;
+
+                console.log("data: ", data);
+                if (response.status === 200) {
+                    setDtoList(data);
+                } else {
+                    console.error("Unexpected data format:", data);
+                }
             } catch (error) {
-              console.error("There was an error fetching the data!", error);
+                console.error("Error fetching the data!", error);
             }
         };
         fetchBoardData(paramBno);
@@ -41,64 +38,54 @@ function BoardUpdate() {
         }));
     };
 
-    const handleSubmit = async (bno) => {
-        // e.preventDefault();
-        console.log("HarryPotter")
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            await api.put(`/board/${bno}`, dtoList);
-            navigate(`/boardread/${bno}`);
+            await api.put(`/board/${paramBno}`, dtoList);
+            navigate(`/boardread/${paramBno}`);
         } catch (error) {
             console.error("Error updating board data:", error.response || error);
         }
     };
 
-    const handleDelete = async (bno) => {
+    const handleDelete = async () => {
         try {
-            await api.delete(`/board/${bno}`);
+            await api.delete(`/board/${paramBno}`);
             navigate(`/board`);
         } catch (error) {
             console.error("Error deleting board data:", error.response || error);
         }
-    }
+    };
 
     return dtoList && (
-        <>
-            <div className="board-read">
-                <div className="board-content">
-                    <div className="board-header">
-                        <span className="board-category">자유게시판</span>
+        <div className="board-read">
+            <div className="board-content">
+                <div className="board-header">
+                    <span className="board-category">자유게시판</span>
 
-                        <form>
-                            {/* <button style={{position: "absolute", right: "0", marginRight: "10px"}}>
-                                    <Link to={`/board`}>수정 완료</Link></button> */}
-                            <div>
-                                <label>제목</label>
-                                <input type="text" name="title" value={dtoList.title} onChange={handleChange} />
-                            </div>
-                            <div className="board-info">
-                                <span className="author">작성자 : {dtoList.writer}</span>
-                                <span className="date">작성 : {new Date(dtoList.regDate).toLocaleDateString()}</span>
-                            </div>
-                            <div>
-                                <label>내용</label>
-                                <textarea cols={30} rows={10} name="content" value={dtoList.content} onChange={handleChange}></textarea>
-                            </div>
-                            {/* <button type="submit"><Link to={`/board`}>수정 완료</Link></button> */}
-                            <button onClick={() => handleSubmit(paramBno)}>
-                                <Link to={`/boardread/${dtoList.bno}`}>수정 완료</Link></button> 
-                        </form>
-                            <button onClick={() => handleDelete(paramBno)}>
-                                <Link to={`/board`}>삭제</Link></button>
-                    </div>
+                    <form onSubmit={handleSubmit}>
+                        <div>
+                            <label>제목</label>
+                            <input type="text" name="title" value={dtoList.title} onChange={handleChange} />
+                        </div>
+                        <div className="board-info">
+                            <span className="author">작성자 : {dtoList.writer}</span>
+                            <span className="date">작성 : {new Date(dtoList.regDate).toLocaleDateString()}</span>
+                        </div>
+                        <div>
+                            <label>내용</label>
+                            <textarea cols={30} rows={10} name="content" value={dtoList.content} onChange={handleChange}></textarea>
+                        </div>
+                        <button type="submit">수정 완료</button>
+                    </form>
+                    <button onClick={handleDelete}>삭제</button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
 export default BoardUpdate;
-
-
 
 
 
