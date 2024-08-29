@@ -91,7 +91,7 @@ const CommentItem = styled.li`
 
 const ApplyModal = ({ meeting, onClose, isLoggedIn }) => {
   const [comment, setComment] = useState('');
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]); // 초기값을 빈 배열로 설정
   const [isAuthor, setIsAuthor] = useState(false);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
 
@@ -103,9 +103,10 @@ const ApplyModal = ({ meeting, onClose, isLoggedIn }) => {
   const fetchComments = async () => {
     try {
       const response = await api.get(`/api/meet/${meeting.meetId}/comments`);
-      setComments(response.data);
+      setComments(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error fetching comments:', error);
+      setComments([]); // 에러 발생 시 빈 배열로 설정
     }
   };
 
@@ -201,12 +202,16 @@ const ApplyModal = ({ meeting, onClose, isLoggedIn }) => {
             <Button type="submit">댓글 등록</Button>
           </CommentForm>
           <CommentList>
-            {comments.map((comment, index) => (
-              <CommentItem key={index}>
-                <p>{comment.content}</p>
-                <small>{new Date(comment.createdAt).toLocaleString()}</small>
-              </CommentItem>
-            ))}
+            {Array.isArray(comments) && comments.length > 0 ? (
+              comments.map((comment, index) => (
+                <CommentItem key={index}>
+                  <p>{comment.content}</p>
+                  <small>{new Date(comment.createdAt).toLocaleString()}</small>
+                </CommentItem>
+              ))
+            ) : (
+              <p>댓글이 없습니다.</p>
+            )}
           </CommentList>
         </CommentSection>
 

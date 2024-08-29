@@ -5,10 +5,10 @@ import YoutubeIframe from './YoutubeModal';
 import useMovieDetails from './useMovieDetails';
 import useReviews from './useReviews';
 import useTrailer from './useTrailer';
-import ReviewSection from './ReveiwSection';
 import ContentSection from './ContentSection';
 import TitleSection from './TitleSection';
 import api from './api';
+import ReviewSection from './ReviewSection';
 
 const scrollbarStyle = css`
   &::-webkit-scrollbar {

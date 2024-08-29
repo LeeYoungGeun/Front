@@ -138,19 +138,34 @@ const MeetModal = ({ onClose }) => {
     }
   };
 
+  useEffect(() => {
+    if (cookies.accessToken) {
+      setAuthToken(cookies.accessToken);
+    }
+    fetchMeetings();
+  }, [cookies.accessToken]);
+
   const fetchMeetings = async () => {
     try {
+
+      const token = cookies.accessToken;
+      if (token) {
+        setAuthToken(token);
+      }
+
       const response = await api.get('/api/meet/list');
-      console.log("API response:", response.data);  // 전체 응답 로깅
+      console.log("전체응답로깅API response:", response.data);  // 전체 응답 로깅
   
-      if (response.data && Array.isArray(response.data.dtoList)) {
+      if (response.data && response.data.dtoList) {
         setMeetings(response.data.dtoList);
+
       } else {
-        console.error('Unexpected data structure:', response.data);
+        console.error('이걸좀보시오Unexpected data structure:', response.data);
         setMeetings([]);
       }
+      
     } catch (error) {
-      console.error('Error fetching meetings:', error);
+      console.error('여기좀보시오Error fetching meetings:', error);
       setMeetings([]);
     }
   };

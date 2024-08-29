@@ -123,7 +123,7 @@ const TextArea = styled.textarea`
 const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken, userData }) => {
   const [formData, setFormData] = useState({
     meetTitle: '',
-    meetWriter: userData ? userData.mnick : '', // mnick을 사용합니다.
+    meetWriter: userData ? userData.mnick : '',
     meetContent: '',
     personnel: '',
     meetTime: '',
@@ -178,6 +178,19 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken,
     setImagePreviews(previews);
   };
 
+  const handleRemoveImage = (index) => {
+    const newImages = [...formData.images];
+    const newImagePreviews = [...imagePreviews];
+    newImages.splice(index, 1);
+    newImagePreviews.splice(index, 1);
+
+    setFormData({
+      ...formData,
+      images: newImages,
+    });
+    setImagePreviews(newImagePreviews);
+  };
+
   const handleSubmit = async () => {
     const data = new FormData();
     Object.keys(formData).forEach(key => {
@@ -187,7 +200,7 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken,
     });
 
     formData.images.forEach(image => {
-      data.append('images', image);
+      data.append('files', image);
     });
 
     const url = editMode ? `/api/meet/modify/${meetNum}` : '/api/meet/register';
@@ -201,9 +214,8 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken,
       });
       console.log("폼 제출 성공", response.data);
       onClose();
-      // 여기에서 부모 컴포넌트에 데이터가 변경되었음을 알립니다.
       if (typeof onClose === 'function') {
-        onClose(true); // true를 전달하여 데이터가 변경되었음을 알립니다.
+        onClose(true);
       }
     } catch (error) {
       console.error("폼 제출에 실패했습니다.", error);
@@ -268,7 +280,10 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken,
         </InputGroup>
         <ImagePreview>
           {imagePreviews.map((src, index) => (
-            <img key={index} src={src} alt="미리보기" />
+            <div key={index}>
+              <img src={src} alt="미리보기" />
+              <button onClick={() => handleRemoveImage(index)}>삭제</button>
+            </div>
           ))}
         </ImagePreview>
         <Button onClick={handleSubmit}>

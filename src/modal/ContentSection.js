@@ -89,7 +89,7 @@ const MovieDescriptionContainer = styled.div`
 const MovieDescriptionContent = styled.p`
   margin-bottom: 10px;
   padding: 10px 0;
-  font-size: 18px;
+  font-size: 15px;
 `;
 
 const MoreButton = styled.span`
