@@ -120,7 +120,7 @@ const TextArea = styled.textarea`
   resize: none; // 사용자가 크기를 조절할 수 없게 합니다.
 `;
 
-const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken, userData }) => {
+const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userData }) => {
   const [formData, setFormData] = useState({
     meetTitle: '',
     meetWriter: userData ? userData.mnick : '',
@@ -294,4 +294,4 @@ const RecruitmentModal = ({ show, onClose, editMode = false, meetNum, authToken,
   );
 };
 
-export default RecruitmentModal;
+export default MeetCreate;

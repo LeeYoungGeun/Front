@@ -71,7 +71,7 @@ const Button = styled.button`
   font-size: 16px;
 `;
 
-const UpdateMeet = ({ meeting, onClose, onUpdate }) => {
+const MeetUpdate = ({ meeting, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     meetTitle: '',
     meetContent: '',
@@ -187,4 +187,4 @@ const UpdateMeet = ({ meeting, onClose, onUpdate }) => {
   );
 };
 
-export default UpdateMeet;
+export default MeetUpdate;
