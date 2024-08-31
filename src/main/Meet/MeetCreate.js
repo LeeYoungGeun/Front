@@ -117,7 +117,7 @@ const ImagePreview = styled.div`
 
 const TextArea = styled.textarea`
   min-height: 150px;
-  resize: none; // 사용자가 크기를 조절할 수 없게 합니다.
+  resize: none;
 `;
 
 const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userData }) => {
@@ -127,7 +127,7 @@ const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userD
     meetContent: '',
     personnel: '',
     meetTime: '',
-    images: []
+    fileNames: [] // 서버에 업로드된 이미지 파일명을 저장
   });
 
   const [imagePreviews, setImagePreviews] = useState([]);
@@ -147,11 +147,11 @@ const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userD
             meetContent: data.meetContent,
             personnel: data.personnel,
             meetTime: data.meetTime,
-            images: []
+            fileNames: data.fileNames || []
           });
 
           if (data.fileNames) {
-            const previews = data.fileNames.map(fileName => `/api/view/${fileName}`);
+            const previews = data.fileNames.map(fileName => `/view/${fileName}`);
             setImagePreviews(previews);
           }
         })
@@ -167,41 +167,53 @@ const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userD
     });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
-    setFormData({
-      ...formData,
-      images: files
+    const formObj = new FormData();
+
+    files.forEach(file => {
+      formObj.append("files", file);
     });
 
-    const previews = files.map(file => URL.createObjectURL(file));
-    setImagePreviews(previews);
+    try {
+      const result = await uploadToServer(formObj, authToken);
+      const newFileNames = result.map(item => item.uuid + "_" + item.fileName);
+
+      setFormData(prev => ({
+        ...prev,
+        fileNames: [...prev.fileNames, ...newFileNames]
+      }));
+
+      const newPreviews = newFileNames.map(fileName => `/view/${fileName}`);
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+    } catch (error) {
+      console.error("File upload failed", error);
+    }
   };
 
-  const handleRemoveImage = (index) => {
-    const newImages = [...formData.images];
-    const newImagePreviews = [...imagePreviews];
-    newImages.splice(index, 1);
-    newImagePreviews.splice(index, 1);
+  const handleRemoveImage = async (index) => {
+    const fileNameToRemove = formData.fileNames[index];
+    try {
+      await removeFileToServer(fileNameToRemove, authToken);
+      const newFileNames = [...formData.fileNames];
+      const newImagePreviews = [...imagePreviews];
+      newFileNames.splice(index, 1);
+      newImagePreviews.splice(index, 1);
 
-    setFormData({
-      ...formData,
-      images: newImages,
-    });
-    setImagePreviews(newImagePreviews);
+      setFormData(prev => ({
+        ...prev,
+        fileNames: newFileNames,
+      }));
+      setImagePreviews(newImagePreviews);
+    } catch (error) {
+      console.error("File removal failed", error);
+    }
   };
 
   const handleSubmit = async () => {
-    const data = new FormData();
-    Object.keys(formData).forEach(key => {
-      if (key !== 'images') {
-        data.append(key, formData[key]);
-      }
-    });
-
-    formData.images.forEach(image => {
-      data.append('files', image);
-    });
+    const data = {
+      ...formData,
+    };
 
     const url = editMode ? `/api/meet/modify/${meetNum}` : '/api/meet/register';
     const method = editMode ? 'put' : 'post';
@@ -212,14 +224,30 @@ const MeetCreate = ({ show, onClose, editMode = false, meetNum, authToken, userD
         url: url,
         data: data,
       });
-      console.log("폼 제출 성공", response.data);
-      onClose();
-      if (typeof onClose === 'function') {
-        onClose(true);
-      }
+      console.log("Form submission successful", response.data);
+      onClose(true);
     } catch (error) {
-      console.error("폼 제출에 실패했습니다.", error);
+      console.error("Form submission failed", error);
     }
+  };
+
+  const uploadToServer = async (formObj, token) => {
+    const response = await api.post('/upload', formObj, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    return response.data;
+  };
+
+  const removeFileToServer = async (fileName, token) => {
+    const response = await api.delete(`/remove/${fileName}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    return response.data;
   };
 
   if (!show) return null;
