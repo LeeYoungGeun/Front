@@ -255,7 +255,6 @@ const MeetApply = ({ meeting, onClose, isLoggedIn, userData }) => {
         replyText: comment,
         replyer: userData.mnick
       });
-      console.log('Comment submission response:', response);
       setComment('');
       fetchComments();
       setSuccessMessage('댓글이 성공적으로 등록되었습니다.');
@@ -332,10 +331,18 @@ const MeetApply = ({ meeting, onClose, isLoggedIn, userData }) => {
 
   return (
     <ModalOverlay onClick={onClose}>
-      <ModalContent onClick={e => e.stopPropagation()}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
         <CloseButton onClick={onClose}><FaTimes /></CloseButton>
         <ImageSection>
-          <MeetImage src={meeting.imageUrl || '/view/{fileName}'} alt="모임 이미지" />
+          {meeting.meetBoardImages && meeting.meetBoardImages.length > 0 && (
+            meeting.meetBoardImages.map((image) => (
+              <MeetImage
+                key={image.uuid}
+                src={`/view/s_${image.uuid}_${image.fileName}`}
+                alt={image.fileName}
+              />
+            ))
+          )}
         </ImageSection>
         <InfoSection>
           <Title>{meeting.meetTitle}</Title>
