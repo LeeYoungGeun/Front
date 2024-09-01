@@ -108,22 +108,20 @@ const MeetItem = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 300px;  // 높이를 늘려 이미지를 수용할 공간 확보
-`;
-
-const MeetImage = styled.div`
-  width: 100%;
-  height: 150px;
-  background-image: url(${props => props.src});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  height: 300px; 
 `;
 
 const MeetInfo = styled.div`
   flex-grow: 1;
+  margin-bottom: 10px;
+`;
+
+const MeetImage = styled.img`
+  width: 100%;
+  height: 150px; 
+  object-fit: cover; 
+  border-radius: 10px;
+  margin-bottom: 10px;
 `;
 
 const MeetModal = ({ onClose }) => {
@@ -171,13 +169,7 @@ const MeetModal = ({ onClose }) => {
       });
 
       if (response.data && response.data.dtoList) {
-        const meetingsWithImages = response.data.dtoList.map(meeting => ({
-          ...meeting,
-          imageUrl: meeting.fileNames && meeting.fileNames.length > 0
-            ? `/view/s_${meeting.fileNames[0]}`  // 썸네일 이미지 경로
-            : `/view/${process.env.PUBLIC_URL}/default-image.jpg`  // 프로젝트의 public 폴더에 있는 기본 이미지
-        }));
-        setMeetings(meetingsWithImages);
+        setMeetings(response.data.dtoList);
         setTotalPages(response.data.totalPage);
       } else {
         console.error('Unexpected data structure:', response.data);
@@ -187,11 +179,6 @@ const MeetModal = ({ onClose }) => {
       console.error('Error fetching meetings:', error);
       setMeetings([]);
     }
-  };
-
-  const handleImageError = (e) => {
-    e.target.onerror = null; // 무한 루프 방지
-    e.target.style.backgroundImage = `url("${process.env.PUBLIC_URL}/default-image.jpg")`;
   };
 
   const handleSearchChange = (e) => {
@@ -246,12 +233,12 @@ const MeetModal = ({ onClose }) => {
           <MeetingsGrid>
             {filteredMeetings.map(meeting => (
               <MeetItem key={meeting.meetId}>
-                <MeetImage 
-                  src={meeting.imageUrl} 
-                  onError={(e) => {
-                    e.target.style.backgroundImage = `url("${process.env.PUBLIC_URL}/default-image.jpg")`;
-                  }}
-                />
+                {meeting.meetBoardImages && meeting.meetBoardImages.length > 0 && (
+                  <MeetImage
+                    src={`/view/${meeting.meetBoardImages[0].uuid}_${meeting.meetBoardImages[0].fileName}`}
+                    alt={meeting.meetBoardImages[0].fileName}
+                  />
+                )}
                 <MeetInfo>
                   <h3>{meeting.meetTitle}</h3>
                   <p>모집인원: {meeting.personnel}</p>
