@@ -266,7 +266,7 @@ const ReviewSection = ({
   };
 
   const canEditOrDelete = (reviewUser) => {
-    return currentUser && currentUser.mid === reviewUser;
+    return currentUser && currentUser.mnick === reviewUser;
   };
 
   console.log('Rendering reviews:', reviews);
@@ -308,7 +308,7 @@ const ReviewSection = ({
               key={item.review_id || index} 
               ref={index === reviews.length - 1 ? lastReviewElementRef : null}
             >
-              <ReviewAuthor>{item.user}</ReviewAuthor>
+              <ReviewAuthor>{item.mnick}</ReviewAuthor>
               <ReviewContent>{item.text}</ReviewContent>
               <ReviewRating>
                 {[...Array(5)].map((_, i) => (
@@ -316,7 +316,7 @@ const ReviewSection = ({
                 ))}
               </ReviewRating>
               <ActionButtons>
-                {canEditOrDelete(item.user) ? (
+                {canEditOrDelete(item.mnick) ? (
                   <>
                     <ActionButton onClick={() => startEditing(item.review_id)}><FaEdit /></ActionButton>
                     <ActionButton onClick={() => handleDeleteReview(item.review_id)}><FaTrash /></ActionButton>
