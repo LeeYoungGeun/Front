@@ -4,7 +4,7 @@ import api from '../Member/api';
 
 const cookies = new Cookies();
 
-console.log('token' , cookies.get("accessToken"));
+console.log('token', cookies.get("accessToken"));
 
 const useReviews = (movie_id, movie_title) => {
   const [rating, setRating] = useState(0);
@@ -15,8 +15,28 @@ const useReviews = (movie_id, movie_title) => {
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
   const [allStars, setAllStars] = useState(0);
-  const [user] = '';
+  const [currentUser, setCurrentUser] = useState(null); // currentUser 상태 추가
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const token = cookies.get("accessToken");
+      if (token) {
+        try {
+          const response = await api.get('/api/auth/modify', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          setCurrentUser(response.data); // 현재 사용자 정보를 상태로 설정
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchCurrentUser();
+  }, []); // 컴포넌트 마운트 시 한 번만 실행
 
   const fetchReviews = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -43,7 +63,7 @@ const useReviews = (movie_id, movie_title) => {
         review_id: review.review_id,
         text: review.review_text,
         rating: review.review_star,
-        user: review.mid
+        mnick: review.mnick  // 리뷰의 작성자 닉네임 사용
       }));
 
       setTotal(response.data.total || 0);
@@ -73,9 +93,9 @@ const useReviews = (movie_id, movie_title) => {
 
   const handleSubmitReview = async () => {
     //로그인되기 전이면
-    if(cookies.get("accessToken") !== undefined){
+    if(cookies.get("accessToken") !== undefined && currentUser){
       if (review.trim() !== '') {
-        setReviews([...reviews, { text: review, rating, user }]);
+        setReviews([...reviews, { text: review, rating, mnick: currentUser.mnick }]);  // 사용자 닉네임 저장
         setReview('');
         setRating(0);
 
