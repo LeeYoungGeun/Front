@@ -338,7 +338,7 @@ const MeetApply = ({ meeting, onClose, isLoggedIn, userData }) => {
             meeting.meetBoardImages.map((image) => (
               <MeetImage
                 key={image.uuid}
-                src={`/view/s_${image.uuid}_${image.fileName}`}
+                src={`/view/${image.uuid}_${image.fileName}`}
                 alt={image.fileName}
               />
             ))
